@@ -36,27 +36,29 @@ public class CustomCommandUsage implements TwitchCommand {
 
         for(String s : splitted) {
             if((s.startsWith("{") && s.endsWith("}")) || (s.startsWith("$(") && s.endsWith(")")) || (s.startsWith("${") && s.endsWith("}"))) {
+                String prefix = s.startsWith("${") ? "${" : s.startsWith("$(") ? "$(" : "{";
+                String suffix = s.endsWith("}") ? "}" : ")";
                 String key = s.substring(1, s.length() - 1);
                 value = switch (key) {
-                    case "channel" -> value.replaceAll("\\{channel}", channel.getName());
-                    case "sender" -> value.replaceAll("\\{sender}", sender.getName());
-                    case "user" -> value.replaceAll("\\{user}", user.getLogin());
-                    case "channel.id" -> value.replaceAll("\\{channel.id}", channel.getId());
-                    case "sender.id" -> value.replaceAll("\\{sender.id}", sender.getId());
-                    case "user.id" -> value.replaceAll("\\{user.id}", user.getId());
-                    case "channel.type" -> value.replaceAll("\\{channel.type}", channel.getBroadcasterType());
-                    case "sender.type" -> value.replaceAll("\\{sender.type}", senderUser.getBroadcasterType());
-                    case "args" -> value.replaceAll("\\{args}", String.join(" ", args));
-                    case "channel.game" -> value.replaceAll("\\{channel.game}", isLive ? stream.getGameName() : "Unknown");
-                    case "channel.title" -> value.replaceAll("\\{channel.title}", isLive ? stream.getTitle() : "Unknown");
-                    case "channel.viewers" -> value.replaceAll("\\{channel.viewers}", isLive ? String.valueOf(stream.getViewerCount()) : "0");
-                    case "channel.followers" -> value.replaceAll("\\{channel.followers}", String.valueOf(channel.getFollowers()));
-                    case "channel.subs" -> value.replaceAll("\\{channel.subs}", String.valueOf(channel.getSubCount()));
-                    case "channel.description" -> value.replaceAll("\\{channel.description}", channel.getDescription());
-                    case "sender.followage" -> value.replaceAll("\\{sender.followage}", channel.getFollowAge(sender.getId()));
-                    case "user.followage" -> value.replaceAll("\\{user.followage}", channel.getFollowAge(user.getId()));
-                    case "channel.uptime" -> value.replaceAll("\\{channel.uptime}", isLive ? channel.getUptime() : "0");
-                    case "channel.chatters" -> value.replaceAll("\\{channel.chatters}", String.valueOf(channel.getChatters().size()));
+                    case "channel" -> value.replaceAll(prefix+"channel"+suffix, channel.getName());
+                    case "sender" -> value.replaceAll(prefix+"sender"+suffix, sender.getName());
+                    case "user" -> value.replaceAll(prefix+"user"+suffix, user.getLogin());
+                    case "channel.id" -> value.replaceAll(prefix+"channel.id"+suffix, channel.getId());
+                    case "sender.id" -> value.replaceAll(prefix+"sender.id"+suffix, sender.getId());
+                    case "user.id" -> value.replaceAll(prefix+"user.id"+suffix, user.getId());
+                    case "channel.type" -> value.replaceAll(prefix+"channel.type"+suffix, channel.getBroadcasterType());
+                    case "sender.type" -> value.replaceAll(prefix+"sender.type"+suffix, senderUser.getBroadcasterType());
+                    case "args" -> value.replaceAll(prefix+"args"+suffix, String.join(" ", args));
+                    case "channel.game" -> value.replaceAll(prefix+"channel.game"+suffix, isLive ? stream.getGameName() : "Unknown");
+                    case "channel.title" -> value.replaceAll(prefix+"channel.title"+suffix, isLive ? stream.getTitle() : "Unknown");
+                    case "channel.viewers" -> value.replaceAll(prefix+"channel.viewers"+suffix, isLive ? String.valueOf(stream.getViewerCount()) : "0");
+                    case "channel.followers" -> value.replaceAll(prefix+"channel.followers"+suffix, String.valueOf(channel.getFollowers()));
+                    case "channel.subs" -> value.replaceAll(prefix+"channel.subs"+suffix, String.valueOf(channel.getSubCount()));
+                    case "channel.description" -> value.replaceAll(prefix+"channel.description"+suffix, channel.getDescription());
+                    case "sender.followage" -> value.replaceAll(prefix+"sender.followage"+suffix, channel.getFollowAge(sender.getId()));
+                    case "user.followage" -> value.replaceAll(prefix+"user.followage"+suffix, channel.getFollowAge(user.getId()));
+                    case "channel.uptime" -> value.replaceAll(prefix+"channel.uptime"+suffix, isLive ? channel.getUptime() : "0");
+                    case "channel.chatters" -> value.replaceAll(prefix+"channel.chatters"+suffix, String.valueOf(channel.getChatters().size()));
                     default -> value;
                 };
             }
