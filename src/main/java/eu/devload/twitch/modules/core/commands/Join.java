@@ -29,7 +29,7 @@ public class Join {
             ResultSet rs = SystemAPI.get().database().query("SELECT * FROM OauthTokens WHERE id='" + e.getUser().getId() + "'");
             if (!rs.next()) {
                 try { rs.close(); } catch (Exception ignored) { }
-                e.getTwitchChat().sendMessage(e.getChannel().getName(), "Register to add the bot to your channel: https://chatbot.devload.eu/register | "+e.getUser().getName());
+                e.getTwitchChat().sendMessage(e.getChannel().getName(), "Register to add the bot to your channel: https://lumora.devload.eu/register | "+e.getUser().getName());
                 return;
             }
             try { rs.close(); } catch (Exception ignored) { }
