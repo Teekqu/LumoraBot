@@ -35,7 +35,7 @@ public class CustomCommandUsage implements TwitchCommand {
         String[] splitted = value.split(" ");
 
         for(String s : splitted) {
-            if(s.startsWith("{") && s.endsWith("}")) {
+            if((s.startsWith("{") && s.endsWith("}")) || (s.startsWith("$(") && s.endsWith(")")) || (s.startsWith("${") && s.endsWith("}"))) {
                 String key = s.substring(1, s.length() - 1);
                 value = switch (key) {
                     case "channel" -> value.replaceAll("\\{channel}", channel.getName());
