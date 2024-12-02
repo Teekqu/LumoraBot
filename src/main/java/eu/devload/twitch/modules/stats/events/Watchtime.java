@@ -48,8 +48,7 @@ public class Watchtime {
                         StatsManager.addMaxTemporaryStatistics(ch, 0, 5);
                     }
 
-                } catch (Exception err) {
-                    System.out.println("[Error] error while updated the watchtime for channel: "+err.getMessage()+" | "+err.getLocalizedMessage());
+                } catch (Exception ignored) {
                 }
             }
 
