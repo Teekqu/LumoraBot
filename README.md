@@ -7,10 +7,10 @@
 ## Core Module<br>
 - !ping<br><br>
 ## Custom Commands Module<br>
-- !command add [command] <response><br>
+- !command add [command] [response]<br>
 - !command remove [command]<br>
-- !command edit [command] <response><br>
-- !command alias [command] [add/remove] <alias><br><br>
+- !command edit [command] [response]<br>
+- !command alias [command] [add/remove] [alias]<br><br>
 ## Stats Module<br>
 - !watchtime<br>
 - !messages<br>
