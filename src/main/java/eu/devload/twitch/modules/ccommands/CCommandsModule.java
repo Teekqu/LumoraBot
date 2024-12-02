@@ -4,7 +4,6 @@ import eu.devload.twitch.interfaces.ModuleInfo;
 import eu.devload.twitch.interfaces.TwitchModule;
 import eu.devload.twitch.modules.ccommands.commands.Command;
 import eu.devload.twitch.modules.ccommands.commands.CustomCommandUsage;
-import eu.devload.twitch.modules.ccommands.commands.TestCommand;
 
 public class CCommandsModule implements TwitchModule {
     @Override
