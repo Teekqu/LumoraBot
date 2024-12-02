@@ -1,2 +1,1 @@
-"# TwitchBot" 
-"# LumoraBot" 
+# LumoraBot
