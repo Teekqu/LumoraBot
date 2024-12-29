@@ -10,7 +10,6 @@ public class Command implements TwitchCommand {
     @Override
     public void execute(TwitchChannel channel, EventUser sender, String command, String[] args) {
         if(!command.equalsIgnoreCase("command") && !command.equalsIgnoreCase("cmd")) return;
-        if(!channel.isModerator(sender.getId())) return;
 
         if(args.length == 0) {
             channel.sendMessage("Usage: !cmd <add/remove/edit/alias> <command> <value/action> [alias] | "+sender.getName());

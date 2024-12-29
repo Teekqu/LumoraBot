@@ -41,11 +41,9 @@ public class Watchtime {
 
                             if(StatsManager.isBlocked(ch, user, "watchtime")) continue;
                             StatsManager.addWatchtime(ch, user, 5);
-                            StatsManager.addTemporaryStatistic(ch, user, "watchtime", 5);
                         }
 
                         StatsManager.updateMaximalWatchtime(ch, 5);
-                        StatsManager.addMaxTemporaryStatistics(ch, 0, 5);
                     }
 
                 } catch (Exception ignored) {

@@ -5,6 +5,7 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import eu.devload.twitch.api.API;
+import eu.devload.twitch.manager.CommandTriggerImpl;
 import eu.devload.twitch.manager.DefaultCommandManager;
 import eu.devload.twitch.manager.ModuleManager;
 import eu.devload.twitch.modules.ccommands.CCommandsModule;
@@ -23,6 +24,8 @@ public class Lumora {
                 .withClientSecret(SystemAPI.get().config().get("twitch.client.secret").toString())
                 .withEnableHelix(true)
                 .withEnablePubSub(true)
+                .withChatQueueTimeout(10000)
+                .withTimeout(10000)
                 .withChatAccount(new OAuth2Credential("twitch", SystemAPI.get().config().get("twitch.client.oauth").toString()))
                 .withChatCommandsViaHelix(true)
                 .withEnableChat(true)
@@ -47,6 +50,8 @@ public class Lumora {
         SystemAPI.get().twitchManager().joinChannels(SystemAPI.get().twitchManager().registeredChannels());
         client.getChat().joinChannel(ClientUser.get().login());
         client.getChat().connect();
+
+        CommandTriggerImpl.startEventCheck();
 
     }
 

@@ -1,5 +1,6 @@
 package eu.devload.twitch.interfaces;
 
+import eu.devload.twitch.manager.CommandTriggerImpl;
 import eu.devload.twitch.utils.SystemAPI;
 
 public interface TwitchModule {
@@ -10,7 +11,7 @@ public interface TwitchModule {
     ModuleInfo info();
 
     default void registerCommand(TwitchCommand command) {
-        command.register(SystemAPI.get().eventHandler());
+        CommandTriggerImpl.addCommand(command.getClass());
     }
 
     default void registerEvent(Object event) {

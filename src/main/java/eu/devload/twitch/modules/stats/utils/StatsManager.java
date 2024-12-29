@@ -57,32 +57,6 @@ public class StatsManager {
         }
     }
 
-    public static void startTemporaryStatistics(TwitchChannel ch, String topic) {
-        if(topic.isEmpty()) topic = "Topic not set";
-        try {
-            SystemAPI.get().database().execute("DELETE FROM TemporaryStatistics WHERE channelId='" + ch.getId() + "';");
-            SystemAPI.get().database().execute("INSERT INTO TemporaryStatistics (channelId, userId, username, messages, minutes, started) VALUES('" + ch.getId() + "', '0', '"+topic+"', 0, 0, " + (System.currentTimeMillis() / 1000L) + ");");
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
-    public static void addMaxTemporaryStatistics(TwitchChannel ch, int messages, int minutes) {
-        try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM TemporaryStatistics WHERE channelId='" + ch.getId() + "' AND userId='0';");
-            if (!rs.next()) {
-                try { rs.close(); } catch (Exception ignored) { }
-                return;
-            } else {
-                int newMessages = rs.getInt("messages") + messages;
-                int newMinutes = rs.getInt("minutes") + minutes;
-                SystemAPI.get().database().execute("UPDATE TemporaryStatistics SET messages=" + newMessages + ", minutes=" + newMinutes + " WHERE channelId='" + ch.getId() + "' AND userId='0';");
-            }
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
     public static void addMessageCount(TwitchChannel channel, User user, int amount) {
         try {
             ResultSet rs = SystemAPI.get().database().query("SELECT * FROM MessageCounts WHERE userId='" + user.getId() + "' AND channelId='" + channel.getId() + "';");
@@ -268,47 +242,6 @@ public class StatsManager {
             SystemAPI.get().database().execute("DELETE FROM BlockedUsers WHERE userId='" + user.getId() + "' AND channelId='" + channel.getId() + "' AND type='" + type + "';");
         } catch (Exception err) {
             err.printStackTrace();
-        }
-    }
-
-    public static void addTemporaryStatistic(TwitchChannel channel, User user, String type, int amount) {
-        try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM TemporaryStatistics WHERE userId='" + user.getId() + "' AND channelId='" + channel.getId() + "';");
-            int messages = 0;
-            int minutes = 0;
-            if (!rs.next()) {
-                SystemAPI.get().database().execute("INSERT INTO TemporaryStatistics (channelId, userId, username, messages, minutes, started) VALUES ('" + channel.getId() + "', '" + user.getId() + "', '"+user.getDisplayName()+"', 0, 0, " + (System.currentTimeMillis()/1000) + ");");
-            } else {
-                messages = rs.getInt("messages");
-                minutes = rs.getInt("minutes");
-            }
-            if (type.equals("messages")) {
-                messages += amount;
-            } else if (type.equals("watchtime") || type.equals("minutes")) {
-                minutes += amount;
-            }
-            SystemAPI.get().database().execute("UPDATE TemporaryStatistics SET messages=" + messages + ", minutes=" + minutes + ", username='"+user.getDisplayName()+"' WHERE userId='" + user.getId() + "' AND channelId='" + channel.getId() + "';");
-            try { rs.close(); } catch (Exception ignored) { }
-        } catch (Exception err) {
-            err.printStackTrace();
-        }
-    }
-
-    public static HashMap<String, Integer> getTemporaryStatistic(TwitchChannel channel, User user) {
-        HashMap<String, Integer> stats = new HashMap<>();
-        try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM TemporaryStatistics WHERE userId='" + user.getId() + "' AND channelId='" + channel.getId() + "';");
-            if (!rs.next()) {
-                try { rs.close(); } catch (Exception ignored) { }
-                return stats;
-            }
-            stats.put("messages", rs.getInt("messages"));
-            stats.put("minutes", rs.getInt("minutes"));
-            try { rs.close(); } catch (Exception ignored) { }
-            return stats;
-        } catch (Exception err) {
-            err.printStackTrace();
-            return stats;
         }
     }
 
