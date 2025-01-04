@@ -23,10 +23,10 @@ public class CustomCommandUsage implements TwitchCommand {
         if(args.length > 0) {
             userName = args[0];
         }
-        User user = SystemAPI.get().client().getHelix().getUsers(channel.getOauth2(), null, Collections.singletonList(userName)).execute().getUsers().getFirst();
-        if(user == null) user = SystemAPI.get().client().getHelix().getUsers(channel.getOauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
+        User user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), null, Collections.singletonList(userName)).execute().getUsers().getFirst();
+        if(user == null) user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
 
-        User senderUser = user.getId().equals(sender.getId()) ? user : SystemAPI.get().client().getHelix().getUsers(channel.getOauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
+        User senderUser = user.getId().equals(sender.getId()) ? user : SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
 
         Stream stream = channel.getStream();
         boolean isLive = stream != null && stream.getStartedAtInstant().getEpochSecond() > System.currentTimeMillis() / 1000 - 60 * 60;

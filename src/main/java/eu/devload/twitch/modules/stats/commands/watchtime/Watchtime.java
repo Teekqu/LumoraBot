@@ -19,8 +19,8 @@ public class Watchtime implements TwitchCommand {
         String userName = sender.getName();
         if(args.length > 0) userName = args[0];
 
-        User user = SystemAPI.get().client().getHelix().getUsers(channel.getOauth2(), null, Collections.singletonList(userName)).execute().getUsers().getFirst();
-        if(user == null) user = SystemAPI.get().client().getHelix().getUsers(channel.getOauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
+        User user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), null, Collections.singletonList(userName)).execute().getUsers().getFirst();
+        if(user == null) user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
 
         long minutes = StatsManager.getWatchtime(channel, user);
         channel.sendMessage(user.getDisplayName()+" has watched "+ Convert.secondsToFormat(minutes*60L)+" in this channel! | "+sender.getName());

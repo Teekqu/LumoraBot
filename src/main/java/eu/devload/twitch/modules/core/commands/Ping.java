@@ -15,7 +15,7 @@ public class Ping implements TwitchCommand {
         if(!command.equalsIgnoreCase("ping")) return;
 
         long time = System.currentTimeMillis();
-        SystemAPI.get().client().getHelix().getUsers(channel.getOauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
+        SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
         long ping = System.currentTimeMillis() - time;
         float sPing = ping/1000f;
 

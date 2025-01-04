@@ -26,7 +26,6 @@ public class TwitchChannel {
 
     @Getter
     private final String id;
-    private String oauth2;
 
     public TwitchChannel(String id) {
         this.id = id;
@@ -46,6 +45,7 @@ public class TwitchChannel {
             long generated = rs.getLong("generated");
             try { rs.close(); } catch (Exception ignored) { }
 
+            String oauth2;
             if(System.currentTimeMillis()/1000 > generated + expires) {
                 JSONObject json = SystemAPI.get().twitchManager().generateNewOauth2TokenWithRefreshToken(refreshToken);
                 if(json == null) {
@@ -55,12 +55,12 @@ public class TwitchChannel {
                 String newOauth2 = json.getString("access_token");
                 String newRefreshToken = json.getString("refresh_token");
                 long expiresIn = json.getLong("expires_in");
-                SystemAPI.get().database().execute("UPDATE OauthTokens SET token='" + newOauth2 + "', refreshToken='" + newRefreshToken + "', expiresIn=" + expiresIn + ", generated=" + System.currentTimeMillis() + " WHERE id=" + id);
-                this.oauth2 = newOauth2;
-                return this.oauth2;
+                SystemAPI.get().database().execute("UPDATE OauthTokens SET token='" + newOauth2 + "', refreshToken='" + newRefreshToken + "', expiresIn=" + expiresIn + ", generated=" + System.currentTimeMillis()/1000 + " WHERE id=" + id);
+                oauth2 = newOauth2;
+                return oauth2;
             }
-            this.oauth2 = accessToken;
-            return this.oauth2;
+            oauth2 = accessToken;
+            return oauth2;
         } catch (Exception err) {
             err.printStackTrace();
             return null;
@@ -68,10 +68,6 @@ public class TwitchChannel {
     }
     public boolean exists() {
         return this.oauth2() != null;
-    }
-
-    public String getOauth2() {
-        return this.oauth2();
     }
 
     public User getUser() {
