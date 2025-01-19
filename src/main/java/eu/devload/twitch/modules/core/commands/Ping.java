@@ -18,8 +18,16 @@ public class Ping implements TwitchCommand {
         SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
         long ping = System.currentTimeMillis() - time;
         float sPing = ping/1000f;
+        String helixPing = "HelixAPI: " + ping + "ms ("+sPing+"s)";
 
-        channel.sendMessage("Pong! HelixAPI: " + ping + "ms ("+sPing+"s) | "+sender.getName());
+        time = System.currentTimeMillis();
+        channel.sendMessage("Checking irc ping...");
+        ping = System.currentTimeMillis() - time;
+        sPing = ping/1000f;
+        String ircPing = "IRC: " + ping + "ms ("+sPing+"s)";
+
+        String message = "Pong! "+helixPing+" | "+ircPing+" | "+sender.getName();
+        channel.sendMessage(message);
 
     }
 }
