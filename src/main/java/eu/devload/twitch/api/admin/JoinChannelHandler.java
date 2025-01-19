@@ -28,7 +28,7 @@ public class JoinChannelHandler implements HttpHandler {
                 ResultSet rs = SystemAPI.get().database().query("SELECT * FROM OauthTokens WHERE id='" + channel + "'");
                 if (!rs.next()) {
                     try { rs.close(); } catch (Exception ignored) { }
-                    System.out.println("[API] Channel not authenticated");
+                    System.out.println("[API] Channel not authenticated ");
                     exchange.sendResponseHeaders(404, 0);
                     exchange.getResponseBody().close();
                     return;
