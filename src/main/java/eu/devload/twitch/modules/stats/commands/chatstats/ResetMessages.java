@@ -30,7 +30,7 @@ public class ResetMessages implements TwitchCommand {
         }
 
         User u = userList.getUsers().getFirst();
-        StatsManager.resetMessageCount(channel, u);
+        StatsManager.resetMessageCount(channel, u.getId());
         channel.sendMessage("Reset messages from "+u.getDisplayName()+"!");
 
     }

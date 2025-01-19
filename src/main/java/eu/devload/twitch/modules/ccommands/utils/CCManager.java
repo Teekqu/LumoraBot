@@ -3,7 +3,6 @@ package eu.devload.twitch.modules.ccommands.utils;
 import eu.devload.twitch.manager.DefaultCommandManager;
 import eu.devload.twitch.modules.ccommands.objects.CustomCommand;
 import eu.devload.twitch.objects.TwitchChannel;
-import eu.devload.twitch.utils.Database;
 import eu.devload.twitch.utils.SystemAPI;
 
 import java.sql.ResultSet;
@@ -12,9 +11,9 @@ import java.util.List;
 
 public class CCManager {
 
-    public static List<CustomCommand> getCommands(TwitchChannel channel) {
+    public static List<CustomCommand> getCommands(String channelId) {
         try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM Commands WHERE channelId='" + channel.getId() + "' AND type!='default'");
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM Commands WHERE channelId='" + channelId + "' AND type!='default'");
             List<CustomCommand> commands = new ArrayList<>();
             while(rs.next()) {
                 commands.add(new CustomCommand(
@@ -71,10 +70,10 @@ public class CCManager {
         }
     }
 
-    public static boolean removeCommand(TwitchChannel channel, String name) {
-        if(getCommand(channel.getId(), name) == null) return false;
+    public static boolean removeCommand(String channelId, String name) {
+        if(getCommand(channelId, name) == null) return false;
         try {
-            SystemAPI.get().database().execute("DELETE FROM Commands WHERE channelId='"+channel.getId()+"' AND name='" + name + "'");
+            SystemAPI.get().database().execute("DELETE FROM Commands WHERE channelId='"+channelId+"' AND name='" + name + "'");
             return true;
         } catch (Exception err) {
             err.printStackTrace();

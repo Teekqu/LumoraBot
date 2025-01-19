@@ -37,7 +37,7 @@ public class Command implements TwitchCommand {
             } else if(args[0].equalsIgnoreCase("remove") || args[0].equalsIgnoreCase("delete")) {
                 String name = args[1];
                 while(name.startsWith("!")) name = name.substring(1);
-                CustomCommand cmd = CCManager.getCommand(channel.getId(), name);
+                CustomCommand cmd = CCManager.getCommand(channel.id(), name);
                 if(cmd == null) {
                     channel.sendMessage("Command not found! | "+sender.getName());
                     return;
@@ -46,13 +46,13 @@ public class Command implements TwitchCommand {
                     channel.sendMessage("You don't have permission to remove this command! | "+sender.getName());
                     return;
                 }
-                CCManager.removeCommand(channel, cmd.name());
+                CCManager.removeCommand(channel.id(), cmd.name());
                 if(cmd.isAlias()) {
                     channel.sendMessage("Successfully removed alias "+cmd.name()+" | "+sender.getName());
                     return;
                 } else if(cmd.isCustom()) {
-                    CCManager.getCommands(channel).forEach(ccmd -> {
-                        if(ccmd.isAlias() && ccmd.rawValue().equalsIgnoreCase(cmd.name())) CCManager.removeCommand(channel, ccmd.name());
+                    CCManager.getCommands(channel.id()).forEach(ccmd -> {
+                        if(ccmd.isAlias() && ccmd.rawValue().equalsIgnoreCase(cmd.name())) CCManager.removeCommand(channel.id(), ccmd.name());
                     });
                     channel.sendMessage("Successfully removed command "+cmd.name()+" | "+sender.getName());
                     return;
@@ -75,16 +75,16 @@ public class Command implements TwitchCommand {
         if(action.equalsIgnoreCase("add") || action.equalsIgnoreCase("create")) {
 
             String finalName = name;
-            if(CCManager.getCommand(channel.getId(), name) != null || CCManager.getDefaultCommands().stream().anyMatch(cmd -> cmd.name().equalsIgnoreCase(finalName))) {
+            if(CCManager.getCommand(channel.id(), name) != null || CCManager.getDefaultCommands().stream().anyMatch(cmd -> cmd.name().equalsIgnoreCase(finalName))) {
                 channel.sendMessage("Command already exists! | "+sender.getName());
                 return;
             }
-            CustomCommand cmd = new CustomCommand(channel.getId(), "custom", "default", name, value);
+            CustomCommand cmd = new CustomCommand(channel.id(), "custom", "default", name, value);
             CCManager.addCommand(cmd);
             channel.sendMessage("Successfully added custom command "+name+" | "+sender.getName());
             return;
         } else if(action.equalsIgnoreCase("remove") || action.equalsIgnoreCase("delete")) {
-            CustomCommand cmd = CCManager.getCommand(channel.getId(), name);
+            CustomCommand cmd = CCManager.getCommand(channel.id(), name);
             if(cmd == null) {
                 channel.sendMessage("Command not found! | "+sender.getName());
                 return;
@@ -93,25 +93,25 @@ public class Command implements TwitchCommand {
                 channel.sendMessage("You don't have permission to remove this command! | "+sender.getName());
                 return;
             }
-            CCManager.removeCommand(channel, cmd.name());
+            CCManager.removeCommand(channel.id(), cmd.name());
             if(cmd.isAlias()) {
                 channel.sendMessage("Successfully removed alias "+cmd.name()+" | "+sender.getName());
                 return;
             } else if(cmd.isCustom()) {
-                CCManager.getCommands(channel).forEach(ccmd -> {
-                    if(ccmd.isAlias() && ccmd.rawValue().equalsIgnoreCase(cmd.name())) CCManager.removeCommand(channel, ccmd.name());
+                CCManager.getCommands(channel.id()).forEach(ccmd -> {
+                    if(ccmd.isAlias() && ccmd.rawValue().equalsIgnoreCase(cmd.name())) CCManager.removeCommand(channel.id(), ccmd.name());
                 });
                 channel.sendMessage("Successfully removed command "+cmd.name()+" | "+sender.getName());
                 return;
             }
         } else if(action.equalsIgnoreCase("edit")) {
-            CustomCommand cmd = CCManager.getCommand(channel.getId(), name);
+            CustomCommand cmd = CCManager.getCommand(channel.id(), name);
             if(cmd == null) {
                 channel.sendMessage("Command not found! | "+sender.getName());
                 return;
             }
             while(cmd.isAlias()) {
-                cmd = CCManager.getCommand(channel.getId(), cmd.rawValue());
+                cmd = CCManager.getCommand(channel.id(), cmd.rawValue());
                 if(cmd == null) {
                     channel.sendMessage("Command not found! | "+sender.getName());
                     return;
@@ -133,13 +133,13 @@ public class Command implements TwitchCommand {
 
             if(value.equalsIgnoreCase("add")) {
 
-                CustomCommand cmd = CCManager.getCommand(channel.getId(), name);
+                CustomCommand cmd = CCManager.getCommand(channel.id(), name);
                 if (cmd == null) {
                     channel.sendMessage("Command not found! | " + sender.getName());
                     return;
                 }
                 while (cmd.isAlias()) {
-                    cmd = CCManager.getCommand(channel.getId(), cmd.rawValue());
+                    cmd = CCManager.getCommand(channel.id(), cmd.rawValue());
                     if (cmd == null) {
                         channel.sendMessage("Command not found! | " + sender.getName());
                         return;
@@ -150,11 +150,11 @@ public class Command implements TwitchCommand {
                     return;
                 }
                 String alias = args[3];
-                if (CCManager.getCommand(channel.getId(), alias) != null) {
+                if (CCManager.getCommand(channel.id(), alias) != null) {
                     channel.sendMessage("Alias already exists! | " + sender.getName());
                     return;
                 }
-                CustomCommand aliasCmd = new CustomCommand(channel.getId(), "alias", "default", alias, cmd.name());
+                CustomCommand aliasCmd = new CustomCommand(channel.id(), "alias", "default", alias, cmd.name());
                 CCManager.addCommand(aliasCmd);
                 channel.sendMessage("Successfully added alias " + alias + " to " + cmd.name() + " | " + sender.getName());
                 return;
@@ -162,7 +162,7 @@ public class Command implements TwitchCommand {
             } else if(value.equalsIgnoreCase("remove")) {
 
                 String alias = args[3];
-                CustomCommand cmd = CCManager.getCommand(channel.getId(), alias);
+                CustomCommand cmd = CCManager.getCommand(channel.id(), alias);
                 if (cmd == null) {
                     channel.sendMessage("Alias not found! | " + sender.getName());
                     return;
@@ -171,7 +171,7 @@ public class Command implements TwitchCommand {
                     channel.sendMessage("You don't have permission to remove this alias! | " + sender.getName());
                     return;
                 }
-                CCManager.removeCommand(channel, cmd.name());
+                CCManager.removeCommand(channel.id(), cmd.name());
                 channel.sendMessage("Successfully removed alias " + cmd.name() + " | " + sender.getName());
                 return;
 

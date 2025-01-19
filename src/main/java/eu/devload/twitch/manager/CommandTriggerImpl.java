@@ -1,6 +1,7 @@
 package eu.devload.twitch.manager;
 
 import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
+import com.github.twitch4j.common.events.domain.EventChannel;
 import com.github.twitch4j.common.events.domain.EventUser;
 import eu.devload.twitch.objects.ClientUser;
 import eu.devload.twitch.objects.TwitchChannel;
@@ -44,7 +45,7 @@ public class CommandTriggerImpl {
             String command = splits[0].substring(1);
             String[] args = new String[splits.length - 1];
             System.arraycopy(splits, 1, args, 0, args.length);
-            TwitchChannel channel = new TwitchChannel(e.getChannel().getId());
+            TwitchChannel channel = CacheManager.get().twitchChannel(e.getChannel().getId());
             triggerCommand(channel, e.getUser(), command, args);
         });
     }

@@ -19,7 +19,7 @@ public class Join {
         if(!e.getChannel().getId().equalsIgnoreCase(ClientUser.get().id())) return;
         if(!e.getMessage().equalsIgnoreCase("!join")) return;
 
-        boolean ch = SystemAPI.get().twitchManager().registeredChannels().stream().anyMatch(c -> c.getId().equals(e.getUser().getId()));
+        boolean ch = SystemAPI.get().twitchManager().registeredChannels().stream().anyMatch(c -> c.id().equals(e.getUser().getId()));
         if(ch) {
             e.getTwitchChat().sendMessage(e.getChannel().getName(), "You are already registered! | !leave to leave the channel. | "+e.getUser().getName());
             return;

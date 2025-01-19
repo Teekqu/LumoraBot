@@ -1,6 +1,7 @@
 package eu.devload.twitch.modules.ccommands.objects;
 
 import com.github.twitch4j.helix.domain.User;
+import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.modules.ccommands.utils.CCManager;
 import eu.devload.twitch.objects.TwitchChannel;
 import eu.devload.twitch.utils.SystemAPI;
@@ -40,7 +41,7 @@ public class CustomCommand {
     }
 
     public TwitchChannel twitchChannel() {
-        return new TwitchChannel(this.channelId);
+        return CacheManager.get().twitchChannel(this.channelId);
     }
 
     public boolean isAlias() {

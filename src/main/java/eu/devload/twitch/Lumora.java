@@ -20,15 +20,14 @@ public class Lumora {
     public static void main(String[] args) {
 
         TwitchClient client = TwitchClientBuilder.builder()
-                .withClientId(SystemAPI.get().config().get("twitch.client.id").toString())
-                .withClientSecret(SystemAPI.get().config().get("twitch.client.secret").toString())
+                .withDefaultAuthToken(new OAuth2Credential("twitch", SystemAPI.get().config().get("twitch.client.oauth").toString()))
                 .withEnableHelix(true)
                 .withEnablePubSub(true)
                 .withChatQueueTimeout(10000)
                 .withTimeout(10000)
+                .withEnableChat(true)
                 .withChatAccount(new OAuth2Credential("twitch", SystemAPI.get().config().get("twitch.client.oauth").toString()))
                 .withChatCommandsViaHelix(true)
-                .withEnableChat(true)
                 .build();
 
         SimpleEventHandler eventHandler = client.getEventManager().getEventHandler(SimpleEventHandler.class);

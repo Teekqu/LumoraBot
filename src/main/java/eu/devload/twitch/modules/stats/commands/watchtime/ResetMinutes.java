@@ -30,7 +30,7 @@ public class ResetMinutes implements TwitchCommand {
         }
 
         User u = userList.getUsers().getFirst();
-        StatsManager.resetWatchtime(channel, u);
+        StatsManager.resetWatchtime(channel, u.getId());
         channel.sendMessage("Resetted watchtime from "+u.getDisplayName()+"!");
 
     }

@@ -39,8 +39,8 @@ public record TwitchManager(TwitchClient client) {
     public boolean addChannel(TwitchChannel channel) {
         try {
             List<TwitchChannel> channels = this.registeredChannels();
-            if (channels.stream().noneMatch(c -> c.getId().equals(channel.getId()))) {
-                SystemAPI.get().database().execute("INSERT INTO Channels (channelId, channelName) VALUES ('" + channel.getId() + "', '" + channel.getName() + "');");
+            if (channels.stream().noneMatch(c -> c.id().equals(channel.id()))) {
+                SystemAPI.get().database().execute("INSERT INTO Channels (channelId, channelName) VALUES ('" + channel.id() + "', '" + channel.getName() + "');");
                 this.joinChannel(channel);
                 return true;
             }
@@ -52,10 +52,10 @@ public record TwitchManager(TwitchClient client) {
     }
 
     public boolean removeChannel(TwitchChannel channel) {
-        if(channel.getId().equals("973046685")) return false;
+        if(channel.id().equals("973046685")) return false;
         try {
-            SystemAPI.get().database().execute("DELETE FROM Channels WHERE channelId='" + channel.getId() + "';");
-            SystemAPI.get().database().execute("DELETE FROM OauthTokens WHERE id=" + channel.getId() + ";");
+            SystemAPI.get().database().execute("DELETE FROM Channels WHERE channelId='" + channel.id() + "';");
+            SystemAPI.get().database().execute("DELETE FROM OauthTokens WHERE id=" + channel.id() + ";");
             this.leaveChannel(channel);
             return true;
         } catch (Exception err) {
@@ -71,14 +71,14 @@ public record TwitchManager(TwitchClient client) {
     public void joinChannel(TwitchChannel channel) {
         this.client.getChat().joinChannel(channel.getName());
         this.client.getClientHelper().enableStreamEventListener(channel.getName());
-        System.out.println("[JOINED] " + channel.getName() + " (" + channel.getId() + ")");
+        System.out.println("[JOINED] " + channel.getName() + " (" + channel.id() + ")");
     }
 
     public void leaveChannel(TwitchChannel channel) {
-        if(channel.getId().equals(ClientUser.get().id())) return;
+        if(channel.id().equals(ClientUser.get().id())) return;
         this.client.getClientHelper().disableStreamEventListener(channel.getName());
         this.client.getChat().leaveChannel(channel.getName());
-        System.out.println("[LEAVED] " + channel.getName() + " (" + channel.getId() + ")");
+        System.out.println("[LEAVED] " + channel.getName() + " (" + channel.id() + ")");
     }
 
     public void leaveChannels(List<TwitchChannel> channel) {

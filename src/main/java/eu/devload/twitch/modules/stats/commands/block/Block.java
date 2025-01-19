@@ -38,14 +38,14 @@ public class Block implements TwitchCommand {
         User u = userList.getUsers().getFirst();
 
         if(type.equalsIgnoreCase("chatstats")) {
-            StatsManager.block(channel, u, "chatstats");
+            StatsManager.block(channel, u.getId(), "chatstats");
             channel.sendMessage("User " + u.getDisplayName() + " has been blocked from chatstats!");
         } else if(type.equalsIgnoreCase("watchtime")) {
-            StatsManager.block(channel, u, "watchtime");
+            StatsManager.block(channel, u.getId(), "watchtime");
             channel.sendMessage("User " + u.getDisplayName() + " has been blocked from watchtime!");
         } else if(type.equalsIgnoreCase("all")) {
-            StatsManager.block(channel, u, "chatstats");
-            StatsManager.block(channel, u, "watchtime");
+            StatsManager.block(channel, u.getId(), "chatstats");
+            StatsManager.block(channel, u.getId(), "watchtime");
             channel.sendMessage("User " + u.getDisplayName() + " has been blocked from chatstats and watchtime!");
         } else {
             channel.sendMessage("Usage: !block <user> [<chatstats/watchtime>]");

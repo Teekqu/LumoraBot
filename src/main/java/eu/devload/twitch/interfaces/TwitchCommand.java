@@ -1,5 +1,6 @@
 package eu.devload.twitch.interfaces;
 
+import com.github.twitch4j.common.events.domain.EventChannel;
 import com.github.twitch4j.common.events.domain.EventUser;
 import eu.devload.twitch.objects.TwitchChannel;
 

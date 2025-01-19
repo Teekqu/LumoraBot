@@ -32,8 +32,8 @@ public class RemoveMinutes implements TwitchCommand {
         }
 
         User u = userList.getUsers().getFirst();
-        if(StatsManager.getWatchtime(channel, u) < amount) {
-            StatsManager.resetWatchtime(channel, u);
+        if(StatsManager.getWatchtime(channel, u.getId()) < amount) {
+            StatsManager.resetWatchtime(channel, u.getId());
             channel.sendMessage("Resetted watchtime from "+u.getDisplayName()+"!");
             return;
         }

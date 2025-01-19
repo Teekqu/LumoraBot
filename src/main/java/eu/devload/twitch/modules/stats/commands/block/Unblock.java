@@ -38,14 +38,14 @@ public class Unblock implements TwitchCommand {
         User u = userList.getUsers().getFirst();
 
         if(type.equalsIgnoreCase("chatstats")) {
-            StatsManager.unblock(channel, u, "chatstats");
+            StatsManager.unblock(channel, u.getId(), "chatstats");
             channel.sendMessage("User " + u.getDisplayName() + " has been unblocked from chatstats!");
         } else if(type.equalsIgnoreCase("watchtime")) {
-            StatsManager.unblock(channel, u, "watchtime");
+            StatsManager.unblock(channel, u.getId(), "watchtime");
             channel.sendMessage("User " + u.getDisplayName() + " has been unblocked from watchtime!");
         } else if(type.equalsIgnoreCase("all")) {
-            StatsManager.unblock(channel, u, "chatstats");
-            StatsManager.unblock(channel, u, "watchtime");
+            StatsManager.unblock(channel, u.getId(), "chatstats");
+            StatsManager.unblock(channel, u.getId(), "watchtime");
             channel.sendMessage("User " + u.getDisplayName() + " has been unblocked from chatstats and watchtime!");
         } else {
             channel.sendMessage("Usage: !unblock <user> [<chatstats/watchtime>]");

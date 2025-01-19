@@ -12,7 +12,6 @@ import com.github.twitch4j.helix.domain.SubscriptionList;
 import com.github.twitch4j.helix.domain.User;
 import eu.devload.twitch.utils.Convert;
 import eu.devload.twitch.utils.SystemAPI;
-import lombok.Getter;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -24,18 +23,37 @@ import java.util.*;
 
 public class TwitchChannel {
 
-    @Getter
     private final String id;
+    private User user;
+    private long timestamp;
 
     public TwitchChannel(String id) {
         this.id = id;
+        this.getUser();
+        this.timestamp = System.currentTimeMillis()/1000;
+    }
+
+    public String id() {
+        return this.id;
+    }
+
+    public long getLatestUpdate() {
+        return this.timestamp;
+    }
+
+    public void update() {
+        this.user = (SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(this.id), null).execute()).getUsers().getFirst();
+        this.timestamp = System.currentTimeMillis()/1000;
     }
 
     public String oauth2() {
         try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM OauthTokens WHERE id='"+id+"';");
-            if(!rs.next()) {
-                try { rs.close(); } catch (Exception ignored) { }
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM OauthTokens WHERE id='" + id + "';");
+            if (!rs.next()) {
+                try {
+                    rs.close();
+                } catch (Exception ignored) {
+                }
                 SystemAPI.get().twitchManager().leaveChannel(this);
                 return null;
             }
@@ -43,19 +61,22 @@ public class TwitchChannel {
             String refreshToken = rs.getString("refreshToken");
             long expires = rs.getLong("expiresIn");
             long generated = rs.getLong("generated");
-            try { rs.close(); } catch (Exception ignored) { }
+            try {
+                rs.close();
+            } catch (Exception ignored) {
+            }
 
             String oauth2;
-            if(System.currentTimeMillis()/1000 > generated + expires) {
+            if (System.currentTimeMillis() / 1000 > generated + expires) {
                 JSONObject json = SystemAPI.get().twitchManager().generateNewOauth2TokenWithRefreshToken(refreshToken);
-                if(json == null) {
+                if (json == null) {
                     SystemAPI.get().twitchManager().removeChannel(this);
                     return null;
                 }
                 String newOauth2 = json.getString("access_token");
                 String newRefreshToken = json.getString("refresh_token");
                 long expiresIn = json.getLong("expires_in");
-                SystemAPI.get().database().execute("UPDATE OauthTokens SET token='" + newOauth2 + "', refreshToken='" + newRefreshToken + "', expiresIn=" + expiresIn + ", generated=" + System.currentTimeMillis()/1000 + " WHERE id=" + id);
+                SystemAPI.get().database().execute("UPDATE OauthTokens SET token='" + newOauth2 + "', refreshToken='" + newRefreshToken + "', expiresIn=" + expiresIn + ", generated=" + System.currentTimeMillis() / 1000 + " WHERE id=" + id);
                 oauth2 = newOauth2;
                 return oauth2;
             }
@@ -66,12 +87,14 @@ public class TwitchChannel {
             return null;
         }
     }
+
     public boolean exists() {
         return this.oauth2() != null;
     }
 
     public User getUser() {
-        return (SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(this.id), null).execute()).getUsers().getFirst();
+        if(this.user == null) this.user = (SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(this.id), null).execute()).getUsers().getFirst();
+        return this.user;
     }
 
     public String getName() {
@@ -107,7 +130,7 @@ public class TwitchChannel {
     }
 
     public String getUptime() {
-        StreamList streams = SystemAPI.get().client().getHelix().getStreams(this.oauth2(), null, null, 1, null,null, Collections.singletonList(this.id), null).execute();
+        StreamList streams = SystemAPI.get().client().getHelix().getStreams(this.oauth2(), null, null, 1, null, null, Collections.singletonList(this.id), null).execute();
         return streams != null && !streams.getStreams().isEmpty() ? Convert.secondsToFormat((streams.getStreams().getFirst()).getUptime().toSeconds()) : "-1s";
     }
 
@@ -118,7 +141,9 @@ public class TwitchChannel {
     public boolean isModerator(String userId) {
         if (this.isBroadcaster(userId)) return true;
         List<Moderator> mods = (SystemAPI.get().client().getHelix().getModerators(this.oauth2(), this.id, null, null, null).execute()).getModerators();
-        return mods.stream().anyMatch((e) -> { return e.getUserId().equals(userId); });
+        return mods.stream().anyMatch((e) -> {
+            return e.getUserId().equals(userId);
+        });
     }
 
     public boolean isEditor(String userId) {
@@ -141,7 +166,8 @@ public class TwitchChannel {
     }
 
     public String getFollowAge(String userId) {
-        if (this.id.equals(userId)) return Convert.secondsToFormat(System.currentTimeMillis() / 1000L - this.getUser().getCreatedAt().getEpochSecond());
+        if (this.id.equals(userId))
+            return Convert.secondsToFormat(System.currentTimeMillis() / 1000L - this.getUser().getCreatedAt().getEpochSecond());
         InboundFollowers follows = SystemAPI.get().client().getHelix().getChannelFollowers(this.oauth2(), this.id, userId, null, null).execute();
         return follows != null && follows.getFollows() != null && !follows.getFollows().isEmpty() ? Convert.secondsToFormat(System.currentTimeMillis() / 1000L - (follows.getFollows().getFirst()).getFollowedAt().getEpochSecond()) : "-1";
     }
@@ -189,9 +215,9 @@ public class TwitchChannel {
     public List<String> getChatters() {
         try {
             URL url = new URL("https://api.twitch.tv/helix/chat/chatters?broadcaster_id=" + this.id + "&moderator_id=" + this.id);
-            HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
-            conn.setRequestProperty("Client-ID", (String)SystemAPI.get().config().get("twitch.client.id"));
+            conn.setRequestProperty("Client-ID", (String) SystemAPI.get().config().get("twitch.client.id"));
             conn.setRequestProperty("Authorization", "Bearer " + this.oauth2());
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoInput(true);
@@ -199,16 +225,16 @@ public class TwitchChannel {
             BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
             String inputLine;
-            while((inputLine = in.readLine()) != null) {
+            while ((inputLine = in.readLine()) != null) {
                 sb.append(inputLine);
             }
 
             in.close();
             conn.disconnect();
             List<String> chatters = new ArrayList<>();
-            if(sb.toString().isEmpty()) return chatters;
+            if (sb.toString().isEmpty()) return chatters;
             JSONObject json = new JSONObject(sb.toString());
-            if(json.isEmpty() || json.getJSONArray("data").isEmpty()) return chatters;
+            if (json.isEmpty() || json.getJSONArray("data").isEmpty()) return chatters;
             for (Object object : json.getJSONArray("data")) {
                 JSONObject jo = (JSONObject) object;
                 chatters.add(jo.getString("user_id"));

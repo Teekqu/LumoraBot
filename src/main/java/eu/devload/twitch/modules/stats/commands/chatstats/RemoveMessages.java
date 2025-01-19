@@ -31,8 +31,8 @@ public class RemoveMessages implements TwitchCommand {
         }
 
         User u = userList.getUsers().getFirst();
-        if(StatsManager.getMessageCount(channel, u) < amount) {
-            StatsManager.resetMessageCount(channel, u);
+        if(StatsManager.getMessageCount(channel, u.getId()) < amount) {
+            StatsManager.resetMessageCount(channel, u.getId());
             channel.sendMessage("Removed all messages from "+u.getDisplayName()+"!");
             return;
         }
