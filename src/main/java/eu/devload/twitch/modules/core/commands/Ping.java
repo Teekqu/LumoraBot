@@ -6,6 +6,7 @@ import eu.devload.twitch.interfaces.TwitchCommand;
 import eu.devload.twitch.objects.TwitchChannel;
 import eu.devload.twitch.utils.SystemAPI;
 
+import java.sql.ResultSet;
 import java.util.Collections;
 
 public class Ping implements TwitchCommand {
@@ -26,7 +27,18 @@ public class Ping implements TwitchCommand {
         sPing = ping/1000f;
         String ircPing = "IRC: " + ping + "ms ("+sPing+"s)";
 
-        String message = "Pong! "+helixPing+" | "+ircPing+" | "+sender.getName();
+        time = System.currentTimeMillis();
+        try {
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM Channels WHERE channelId=" + channel.id());
+            try { rs.close(); } catch (Exception err) { }
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        ping = System.currentTimeMillis() - time;
+        sPing = ping/1000f;
+        String dbPing = "Database: " + ping + "ms ("+sPing+"s)";
+
+        String message = "Pong! "+helixPing+" | "+ircPing+" | "+dbPing+" | "+sender.getName();
         channel.sendMessage(message);
 
     }
