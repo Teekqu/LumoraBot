@@ -2,6 +2,7 @@ package eu.devload.twitch.modules.developer.commands;
 
 import com.github.twitch4j.common.events.domain.EventUser;
 import eu.devload.twitch.interfaces.TwitchCommand;
+import eu.devload.twitch.modules.developer.manager.DevManager;
 import eu.devload.twitch.objects.TwitchChannel;
 import eu.devload.twitch.utils.SystemAPI;
 
@@ -13,6 +14,7 @@ public class PingCommand implements TwitchCommand {
     public void execute(TwitchChannel channel, EventUser sender, String command, String[] args) {
 
         if(!command.equalsIgnoreCase("ping")) return;
+        if(!DevManager.isDeveloper(sender.getId())) return;
 
         long time = System.currentTimeMillis();
         SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
