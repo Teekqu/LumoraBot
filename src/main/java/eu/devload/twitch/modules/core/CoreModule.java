@@ -12,8 +12,6 @@ public class CoreModule implements TwitchModule {
         new Leave();
         new Support();
 
-        registerCommand(new Ping());
-
     }
 
     @Override

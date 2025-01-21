@@ -2,6 +2,7 @@ package eu.devload.twitch.modules.developer;
 
 import eu.devload.twitch.interfaces.ModuleInfo;
 import eu.devload.twitch.interfaces.TwitchModule;
+import eu.devload.twitch.modules.developer.commands.PingCommand;
 import eu.devload.twitch.modules.developer.commands.StatsCommand;
 
 public class DeveloperModule implements TwitchModule {
@@ -9,6 +10,7 @@ public class DeveloperModule implements TwitchModule {
     public void onEnable() {
 
         registerCommand(new StatsCommand());
+        registerCommand(new PingCommand());
 
     }
 
