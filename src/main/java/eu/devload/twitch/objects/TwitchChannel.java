@@ -177,7 +177,8 @@ public class TwitchChannel {
     }
 
     public Stream getStream() {
-        return !this.isLive() ? null : (SystemAPI.get().client().getHelix().getStreams(this.oauth2(), null, null, 1, null, null, Collections.singletonList(this.id), null).execute()).getStreams().getFirst();
+        StreamList streams = SystemAPI.get().client().getHelix().getStreams(this.oauth2(), null, null, 1, null, null, Collections.singletonList(this.id), null).execute();
+        return streams != null && !streams.getStreams().isEmpty() ? streams.getStreams().getFirst() : null;
     }
 
     public void sendMessage(String message) {

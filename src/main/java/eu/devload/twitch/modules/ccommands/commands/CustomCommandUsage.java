@@ -14,13 +14,12 @@ import java.util.Collections;
 public class CustomCommandUsage implements TwitchCommand {
     @Override
     public void execute(TwitchChannel channel, EventUser sender, String command, String[] args) {
-
         CustomCommand cmd = CCManager.getCommand(channel.id(), command);
         if(cmd == null || cmd.isDefault()) return;
         if(!cmd.hasPermission(sender.getId())) return;
 
         String userName = sender.getName();
-        if(args.length > 0 && String.join(" ", args).contains("{user")) {
+        if(args.length > 0) {
             userName = args[0];
         }
         User user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), null, Collections.singletonList(userName)).execute().getUsers().getFirst();
@@ -29,7 +28,6 @@ public class CustomCommandUsage implements TwitchCommand {
         //User senderUser = user.getId().equals(sender.getId()) ? user : SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
 
         Stream stream = channel.getStream();
-        boolean isLive = stream != null;
 
         String value = cmd.value();
         StringBuilder sb = new StringBuilder();
@@ -45,15 +43,15 @@ public class CustomCommandUsage implements TwitchCommand {
             else if(s.contains("{user.id}")) sb.append(s.replaceFirst("\\{user.id}", user.getId())).append(" ");
             else if(s.contains("{channel.type}")) sb.append(s.replaceFirst("\\{channel.type}", channel.getBroadcasterType())).append(" ");
             else if(s.contains("{args}")) sb.append(s.replaceFirst("\\{args}", String.join(" ", args))).append(" ");
-            else if(s.contains("{channel.game}")) sb.append(s.replaceFirst("\\{channel.game}", isLive ? stream.getGameName() : "Unknown")).append(" ");
-            else if(s.contains("{channel.title}")) sb.append(s.replaceFirst("\\{channel.title}", isLive ? stream.getTitle() : "Unknown")).append(" ");
-            else if(s.contains("{channel.viewers}")) sb.append(s.replaceFirst("\\{channel.viewers}", isLive ? String.valueOf(stream.getViewerCount()) : "0")).append(" ");
+            else if(s.contains("{channel.game}")) sb.append(s.replaceFirst("\\{channel.game}", stream.getGameName())).append(" ");
+            else if(s.contains("{channel.title}")) sb.append(s.replaceFirst("\\{channel.title}", stream.getTitle())).append(" ");
+            else if(s.contains("{channel.viewers}")) sb.append(s.replaceFirst("\\{channel.viewers}", String.valueOf(stream.getViewerCount()))).append(" ");
             else if(s.contains("{channel.followers}")) sb.append(s.replaceFirst("\\{channel.followers}", String.valueOf(channel.getFollowers()))).append(" ");
             else if(s.contains("{channel.subs}")) sb.append(s.replaceFirst("\\{channel.subs}", String.valueOf(channel.getSubCount()))).append(" ");
             else if(s.contains("{channel.description}")) sb.append(s.replaceFirst("\\{channel.description}", channel.getDescription())).append(" ");
             else if(s.contains("{sender.followage}")) sb.append(s.replaceFirst("\\{sender.followage}", channel.getFollowAge(sender.getId()))).append(" ");
             else if(s.contains("{user.followage}")) sb.append(s.replaceFirst("\\{user.followage}", channel.getFollowAge(user.getId()))).append(" ");
-            else if(s.contains("{channel.uptime}")) sb.append(s.replaceFirst("\\{channel.uptime}", isLive ? channel.getUptime() : "0")).append(" ");
+            else if(s.contains("{channel.uptime}")) sb.append(s.replaceFirst("\\{channel.uptime}", channel.getUptime())).append(" ");
             else if(s.contains("{channel.chatters}")) sb.append(s.replaceFirst("\\{channel.chatters}", String.valueOf(channel.getChatters().size()))).append(" ");
             else sb.append(s).append(" ");
         }
