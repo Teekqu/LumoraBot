@@ -16,6 +16,7 @@ public class CacheManager {
 
     private List<TwitchChannel> channels = new ArrayList<>();
     private List<User> users = new ArrayList<>();
+    private List<String> liveChannels = new ArrayList<>();
 
     public void twitchChannel(TwitchChannel channel) {
         if(channels.contains(channel)) channels.set(channels.indexOf(channel), channel);
@@ -25,6 +26,24 @@ public class CacheManager {
         TwitchChannel ch = channels.stream().filter(c -> c.id().equals(String.valueOf(id))).findFirst().orElse(new TwitchChannel(String.valueOf(id)));
         if(ch.getLatestUpdate()-System.currentTimeMillis()/1000 > 600) ch.update();
         return ch;
+    }
+
+    public void user(User user) {
+        if(users.contains(user)) users.set(users.indexOf(user), user);
+        else users.add(user);
+    }
+    public User user(String id) {
+        return users.stream().filter(c -> c.getId().equals(id)).findFirst().orElse(null);
+    }
+
+    public void liveChannel(String channel) {
+        if(!liveChannels.contains(channel)) liveChannels.add(channel);
+    }
+    public boolean isLive(String channel) {
+        return liveChannels.contains(channel);
+    }
+    public void removeLiveChannel(String channel) {
+        liveChannels.remove(channel);
     }
 
 }

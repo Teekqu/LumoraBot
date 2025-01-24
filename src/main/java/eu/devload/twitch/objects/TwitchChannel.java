@@ -29,7 +29,7 @@ public class TwitchChannel {
 
     public TwitchChannel(String id) {
         this.id = id;
-        this.getUser();
+        this.user = null;
         this.timestamp = System.currentTimeMillis()/1000;
     }
 

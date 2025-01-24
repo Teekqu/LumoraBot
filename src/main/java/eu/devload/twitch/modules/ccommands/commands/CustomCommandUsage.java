@@ -22,6 +22,7 @@ public class CustomCommandUsage implements TwitchCommand {
         if(args.length > 0) {
             userName = args[0];
         }
+        
         User user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), null, Collections.singletonList(userName)).execute().getUsers().getFirst();
         if(user == null) user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
 
