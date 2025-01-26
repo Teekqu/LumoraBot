@@ -4,8 +4,10 @@ import com.github.twitch4j.common.events.domain.EventUser;
 import com.github.twitch4j.helix.domain.Stream;
 import com.github.twitch4j.helix.domain.User;
 import eu.devload.twitch.interfaces.TwitchCommand;
+import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.modules.ccommands.objects.CustomCommand;
 import eu.devload.twitch.modules.ccommands.utils.CCManager;
+import eu.devload.twitch.objects.LiveObject;
 import eu.devload.twitch.objects.TwitchChannel;
 import eu.devload.twitch.utils.SystemAPI;
 
@@ -28,7 +30,8 @@ public class CustomCommandUsage implements TwitchCommand {
 
         //User senderUser = user.getId().equals(sender.getId()) ? user : SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
 
-        Stream stream = channel.getStream();
+        LiveObject stream = CacheManager.get().getLiveChannel(channel.id());
+        if(stream == null) stream = new LiveObject(channel.id(), "-", "-", 0);
 
         String value = cmd.value();
         StringBuilder sb = new StringBuilder();
@@ -44,9 +47,9 @@ public class CustomCommandUsage implements TwitchCommand {
             else if(s.contains("{user.id}")) sb.append(s.replaceFirst("\\{user.id}", user.getId())).append(" ");
             else if(s.contains("{channel.type}")) sb.append(s.replaceFirst("\\{channel.type}", channel.getBroadcasterType())).append(" ");
             else if(s.contains("{args}")) sb.append(s.replaceFirst("\\{args}", String.join(" ", args))).append(" ");
-            else if(s.contains("{channel.game}")) sb.append(s.replaceFirst("\\{channel.game}", stream.getGameName())).append(" ");
-            else if(s.contains("{channel.title}")) sb.append(s.replaceFirst("\\{channel.title}", stream.getTitle())).append(" ");
-            else if(s.contains("{channel.viewers}")) sb.append(s.replaceFirst("\\{channel.viewers}", String.valueOf(stream.getViewerCount()))).append(" ");
+            else if(s.contains("{channel.game}")) sb.append(s.replaceFirst("\\{channel.game}", stream.game())).append(" ");
+            else if(s.contains("{channel.title}")) sb.append(s.replaceFirst("\\{channel.title}", stream.title())).append(" ");
+            else if(s.contains("{channel.viewers}")) sb.append(s.replaceFirst("\\{channel.viewers}", String.valueOf(stream.viewer()))).append(" ");
             else if(s.contains("{channel.followers}")) sb.append(s.replaceFirst("\\{channel.followers}", String.valueOf(channel.getFollowers()))).append(" ");
             else if(s.contains("{channel.subs}")) sb.append(s.replaceFirst("\\{channel.subs}", String.valueOf(channel.getSubCount()))).append(" ");
             else if(s.contains("{channel.description}")) sb.append(s.replaceFirst("\\{channel.description}", channel.getDescription())).append(" ");
