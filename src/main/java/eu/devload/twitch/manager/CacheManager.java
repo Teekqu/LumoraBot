@@ -1,9 +1,11 @@
 package eu.devload.twitch.manager;
 
 import com.github.twitch4j.helix.domain.User;
+import eu.devload.twitch.objects.LiveObject;
 import eu.devload.twitch.objects.TwitchChannel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class CacheManager {
@@ -16,7 +18,7 @@ public class CacheManager {
 
     private List<TwitchChannel> channels = new ArrayList<>();
     private List<User> users = new ArrayList<>();
-    private List<String> liveChannels = new ArrayList<>();
+    private HashMap<String, LiveObject> liveChannels = new HashMap<>();
 
     public void twitchChannel(TwitchChannel channel) {
         if(channels.contains(channel)) channels.set(channels.indexOf(channel), channel);
@@ -36,14 +38,15 @@ public class CacheManager {
         return users.stream().filter(c -> c.getId().equals(id)).findFirst().orElse(null);
     }
 
-    public void liveChannel(String channel) {
-        if(!liveChannels.contains(channel)) liveChannels.add(channel);
+    public void setLiveChannel(LiveObject liveObject) {
+        if(liveChannels.containsKey(liveObject.channelId())) liveChannels.replace(liveObject.channelId(), liveObject);
+        else liveChannels.put(liveObject.channelId(), liveObject);
     }
-    public boolean isLive(String channel) {
-        return liveChannels.contains(channel);
+    public LiveObject getLiveChannel(String id) {
+        return liveChannels.get(id);
     }
-    public void removeLiveChannel(String channel) {
-        liveChannels.remove(channel);
+    public void removeLiveChannel(String id) {
+        liveChannels.remove(id);
     }
 
 }
