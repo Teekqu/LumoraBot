@@ -8,12 +8,15 @@ import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.objects.ClientUser;
 import eu.devload.twitch.objects.TwitchChannel;
 
+import java.util.Objects;
+
 public interface TwitchMessageEvent {
 
     void onMessage(TwitchChannel channel, EventUser user, String message);
 
     default void register(SimpleEventHandler eventHandler) {
         eventHandler.onEvent(ChannelMessageEvent.class, e -> {
+            if(!Objects.equals(e.getChannel().getId(), e.getSourceChannelId().orElse(e.getChannel().getId()))) return;
             if(e.getMessage().startsWith("!")) return;
             if(e.getChannel().getId().equals(ClientUser.get().id())) return;
             TwitchChannel channel = CacheManager.get().twitchChannel(e.getChannel().getId());

@@ -6,12 +6,15 @@ import com.github.twitch4j.chat.events.channel.SubscriptionEvent;
 import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.objects.TwitchChannel;
 
+import java.util.Objects;
+
 public interface TwitchSubscriptionEvent {
 
     void onEvent(TwitchChannel channel, SubscriptionEvent event);
 
     default void register(SimpleEventHandler eventHandler) {
         eventHandler.onEvent(SubscriptionEvent.class, e -> {
+            if(!Objects.equals(e.getChannel().getId(), e.getSourceChannelId().orElse(e.getChannel().getId()))) return;
             TwitchChannel channel = CacheManager.get().twitchChannel(e.getChannel().getId());
             onEvent(channel, e);
         });
