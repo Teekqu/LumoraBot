@@ -4,8 +4,10 @@ import com.github.twitch4j.common.events.domain.EventUser;
 import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.helix.domain.UserList;
 import eu.devload.twitch.interfaces.TwitchCommand;
+import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.modules.stats.utils.StatsManager;
 import eu.devload.twitch.objects.TwitchChannel;
+import eu.devload.twitch.objects.UserObject;
 import eu.devload.twitch.utils.SystemAPI;
 
 import java.util.Collections;
@@ -25,21 +27,20 @@ public class RemoveMinutes implements TwitchCommand {
         String user = args[0];
         int amount = Integer.parseInt(args[1]);
 
-        UserList userList = SystemAPI.get().client().getHelix().getUsers(null, null, Collections.singletonList(user)).execute();
-        if(userList.getUsers().isEmpty() || userList.getUsers() == null) {
+        UserObject u = CacheManager.get().getUserByName(user);
+        if(u == null) {
             channel.sendMessage("User not found!");
             return;
         }
 
-        User u = userList.getUsers().getFirst();
-        if(StatsManager.getWatchtime(channel, u.getId()) < amount) {
-            StatsManager.resetWatchtime(channel, u.getId());
-            channel.sendMessage("Resetted watchtime from "+u.getDisplayName()+"!");
+        if(StatsManager.getWatchtime(channel, u.id()) < amount) {
+            StatsManager.resetWatchtime(channel, u.id());
+            channel.sendMessage("Resetted watchtime from "+u.displayName()+"!");
             return;
         }
 
         StatsManager.removeWatchtime(channel, u, amount);
-        channel.sendMessage("Removed "+amount+" minutes from "+u.getDisplayName()+"!");
+        channel.sendMessage("Removed "+amount+" minutes from "+u.displayName()+"!");
 
     }
 }

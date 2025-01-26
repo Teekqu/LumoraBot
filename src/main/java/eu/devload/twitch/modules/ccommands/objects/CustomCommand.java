@@ -41,7 +41,7 @@ public class CustomCommand {
     }
 
     public TwitchChannel twitchChannel() {
-        return CacheManager.get().twitchChannel(this.channelId);
+        return CacheManager.get().getChannel(this.channelId);
     }
 
     public boolean isAlias() {

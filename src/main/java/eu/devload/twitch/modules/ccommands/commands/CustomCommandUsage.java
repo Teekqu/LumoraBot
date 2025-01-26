@@ -9,6 +9,7 @@ import eu.devload.twitch.modules.ccommands.objects.CustomCommand;
 import eu.devload.twitch.modules.ccommands.utils.CCManager;
 import eu.devload.twitch.objects.LiveObject;
 import eu.devload.twitch.objects.TwitchChannel;
+import eu.devload.twitch.objects.UserObject;
 import eu.devload.twitch.utils.SystemAPI;
 
 import java.util.Collections;
@@ -24,11 +25,9 @@ public class CustomCommandUsage implements TwitchCommand {
         if(args.length > 0) {
             userName = args[0];
         }
-        
-        User user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), null, Collections.singletonList(userName)).execute().getUsers().getFirst();
-        if(user == null) user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
 
-        //User senderUser = user.getId().equals(sender.getId()) ? user : SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), Collections.singletonList(sender.getId()), null).execute().getUsers().getFirst();
+        UserObject user = CacheManager.get().getUserByName(userName);
+        if(user == null) user = CacheManager.get().getUserById(sender.getId());
 
         LiveObject stream = CacheManager.get().getLiveChannel(channel.id());
         if(stream == null) stream = new LiveObject(channel.id(), "-", "-", 0);
@@ -41,10 +40,10 @@ public class CustomCommandUsage implements TwitchCommand {
             if(!s.contains("{") && !s.contains("}")) sb.append(s).append(" ");
             else if(s.contains("{channel}")) sb.append(s.replaceFirst("\\{channel}", channel.getName())).append(" ");
             else if(s.contains("{sender}")) sb.append(s.replaceFirst("\\{sender}", sender.getName())).append(" ");
-            else if(s.contains("{user}")) sb.append(s.replaceFirst("\\{user}", user.getLogin())).append(" ");
+            else if(s.contains("{user}")) sb.append(s.replaceFirst("\\{user}", user.login())).append(" ");
             else if(s.contains("{channel.id}")) sb.append(s.replaceFirst("\\{channel.id}", channel.id())).append(" ");
             else if(s.contains("{sender.id}")) sb.append(s.replaceFirst("\\{sender.id}", sender.getId())).append(" ");
-            else if(s.contains("{user.id}")) sb.append(s.replaceFirst("\\{user.id}", user.getId())).append(" ");
+            else if(s.contains("{user.id}")) sb.append(s.replaceFirst("\\{user.id}", user.id())).append(" ");
             else if(s.contains("{channel.type}")) sb.append(s.replaceFirst("\\{channel.type}", channel.getBroadcasterType())).append(" ");
             else if(s.contains("{args}")) sb.append(s.replaceFirst("\\{args}", String.join(" ", args))).append(" ");
             else if(s.contains("{channel.game}")) sb.append(s.replaceFirst("\\{channel.game}", stream.game())).append(" ");
@@ -54,7 +53,7 @@ public class CustomCommandUsage implements TwitchCommand {
             else if(s.contains("{channel.subs}")) sb.append(s.replaceFirst("\\{channel.subs}", String.valueOf(channel.getSubCount()))).append(" ");
             else if(s.contains("{channel.description}")) sb.append(s.replaceFirst("\\{channel.description}", channel.getDescription())).append(" ");
             else if(s.contains("{sender.followage}")) sb.append(s.replaceFirst("\\{sender.followage}", channel.getFollowAge(sender.getId()))).append(" ");
-            else if(s.contains("{user.followage}")) sb.append(s.replaceFirst("\\{user.followage}", channel.getFollowAge(user.getId()))).append(" ");
+            else if(s.contains("{user.followage}")) sb.append(s.replaceFirst("\\{user.followage}", channel.getFollowAge(user.id()))).append(" ");
             else if(s.contains("{channel.uptime}")) sb.append(s.replaceFirst("\\{channel.uptime}", channel.getUptime())).append(" ");
             else if(s.contains("{channel.chatters}")) sb.append(s.replaceFirst("\\{channel.chatters}", String.valueOf(channel.getChatters().size()))).append(" ");
             else sb.append(s).append(" ");

@@ -19,7 +19,7 @@ public interface TwitchMessageEvent {
             if(!Objects.equals(e.getChannel().getId(), e.getSourceChannelId().orElse(e.getChannel().getId()))) return;
             if(e.getMessage().startsWith("!")) return;
             if(e.getChannel().getId().equals(ClientUser.get().id())) return;
-            TwitchChannel channel = CacheManager.get().twitchChannel(e.getChannel().getId());
+            TwitchChannel channel = CacheManager.get().getChannel(e.getChannel().getId());
             onMessage(channel, e.getUser(), e.getMessage());
         });
     }

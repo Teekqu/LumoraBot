@@ -1,7 +1,7 @@
 package eu.devload.twitch.modules.stats.utils;
 
-import com.github.twitch4j.helix.domain.User;
 import eu.devload.twitch.objects.TwitchChannel;
+import eu.devload.twitch.objects.UserObject;
 import eu.devload.twitch.utils.SystemAPI;
 
 import java.sql.ResultSet;
@@ -56,14 +56,14 @@ public class StatsManager {
         }
     }
 
-    public static void addMessageCount(TwitchChannel channel, User user, int amount) {
+    public static void addMessageCount(TwitchChannel channel, UserObject user, int amount) {
         try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM MessageCounts WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM MessageCounts WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
             if (!rs.next()) {
-                SystemAPI.get().database().execute("INSERT INTO MessageCounts (channelId, userId, username, messageCount) VALUES ('" + channel.id() + "', '" + user.getId() + "','" + user.getDisplayName() + "', " + amount + ");");
+                SystemAPI.get().database().execute("INSERT INTO MessageCounts (channelId, userId, username, messageCount) VALUES ('" + channel.id() + "', '" + user.id() + "','" + user.displayName() + "', " + amount + ");");
             } else {
                 int newCount = Integer.parseInt(rs.getString("messageCount")) + amount;
-                SystemAPI.get().database().execute("UPDATE MessageCounts SET messageCount=" + newCount + ", username='" + user.getDisplayName() + "' WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+                SystemAPI.get().database().execute("UPDATE MessageCounts SET messageCount=" + newCount + ", username='" + user.displayName() + "' WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
             }
             try { rs.close(); } catch (Exception ignored) { }
         } catch (Exception err) {
@@ -71,9 +71,9 @@ public class StatsManager {
         }
     }
 
-    public static void removeMessageCount(TwitchChannel channel, User user, int amount) {
+    public static void removeMessageCount(TwitchChannel channel, UserObject user, int amount) {
         try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM MessageCounts WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM MessageCounts WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
             if (!rs.next()) {
                 try {
                     rs.close();
@@ -83,9 +83,9 @@ public class StatsManager {
             } else {
                 int count = Integer.parseInt(rs.getString("messageCount"));
                 if (count - amount <= 0) {
-                    SystemAPI.get().database().execute("DELETE FROM MessageCounts WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+                    SystemAPI.get().database().execute("DELETE FROM MessageCounts WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
                 } else {
-                    SystemAPI.get().database().execute("UPDATE MessageCounts SET messageCount=" + (count - amount) + ", username='" + user.getDisplayName() + "' WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+                    SystemAPI.get().database().execute("UPDATE MessageCounts SET messageCount=" + (count - amount) + ", username='" + user.displayName() + "' WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
                 }
 
                 try { rs.close(); } catch (Exception ignored) { }
@@ -127,14 +127,14 @@ public class StatsManager {
         }
     }
 
-    public static void addWatchtime(TwitchChannel channel, User user, int minutes) {
+    public static void addWatchtime(TwitchChannel channel, UserObject user, int minutes) {
         try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM Watchtimes WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM Watchtimes WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
             if (!rs.next()) {
-                SystemAPI.get().database().execute("INSERT INTO Watchtimes (channelId, userId, username, minutes) VALUES ('" + channel.id() + "', '" + user.getId() + "','" + user.getDisplayName() + "', " + minutes + ");");
+                SystemAPI.get().database().execute("INSERT INTO Watchtimes (channelId, userId, username, minutes) VALUES ('" + channel.id() + "', '" + user.id() + "','" + user.displayName() + "', " + minutes + ");");
             } else {
                 int newCount = Integer.parseInt(rs.getString("minutes")) + minutes;
-                SystemAPI.get().database().execute("UPDATE Watchtimes SET minutes=" + newCount + ", username='" + user.getDisplayName() + "' WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+                SystemAPI.get().database().execute("UPDATE Watchtimes SET minutes=" + newCount + ", username='" + user.displayName() + "' WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
             }
 
             try { rs.close(); } catch (Exception ignored) { }
@@ -144,9 +144,9 @@ public class StatsManager {
         }
     }
 
-    public static void removeWatchtime(TwitchChannel channel, User user, int minutes) {
+    public static void removeWatchtime(TwitchChannel channel, UserObject user, int minutes) {
         try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM Watchtimes WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM Watchtimes WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
             if (!rs.next()) {
                 try {
                     rs.close();
@@ -156,9 +156,9 @@ public class StatsManager {
             } else {
                 int count = Integer.parseInt(rs.getString("minutes"));
                 if (count - minutes <= 0) {
-                    SystemAPI.get().database().execute("DELETE FROM Watchtimes WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+                    SystemAPI.get().database().execute("DELETE FROM Watchtimes WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
                 } else {
-                    SystemAPI.get().database().execute("UPDATE Watchtimes SET minutes=" + (count - minutes) + ", username='" + user.getDisplayName() + "' WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "';");
+                    SystemAPI.get().database().execute("UPDATE Watchtimes SET minutes=" + (count - minutes) + ", username='" + user.displayName() + "' WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "';");
                 }
 
                 try { rs.close(); } catch (Exception ignored) { }
@@ -194,9 +194,9 @@ public class StatsManager {
         }
     }
 
-    public static boolean isBlocked(TwitchChannel channel, User user, String type) {
+    public static boolean isBlocked(TwitchChannel channel, UserObject user, String type) {
         try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM BlockedUsers WHERE userId='" + user.getId() + "' AND channelId='" + channel.id() + "' AND type='" + type + "';");
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM BlockedUsers WHERE userId='" + user.id() + "' AND channelId='" + channel.id() + "' AND type='" + type + "';");
             if (!rs.next()) {
                 try { rs.close(); } catch (Exception ignored) { }
 

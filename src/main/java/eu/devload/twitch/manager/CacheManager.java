@@ -1,12 +1,12 @@
 package eu.devload.twitch.manager;
 
-import com.github.twitch4j.helix.domain.User;
 import eu.devload.twitch.objects.LiveObject;
 import eu.devload.twitch.objects.TwitchChannel;
+import eu.devload.twitch.objects.UserObject;
+import eu.devload.twitch.utils.SystemAPI;
 
-import java.util.ArrayList;
+import java.sql.ResultSet;
 import java.util.HashMap;
-import java.util.List;
 
 public class CacheManager {
 
@@ -16,26 +16,19 @@ public class CacheManager {
         return instance;
     }
 
-    private List<TwitchChannel> channels = new ArrayList<>();
-    private List<User> users = new ArrayList<>();
+    private HashMap<String, TwitchChannel> channels = new HashMap<>();
     private HashMap<String, LiveObject> liveChannels = new HashMap<>();
+    private HashMap<String, UserObject> users = new HashMap<>();
 
-    public void twitchChannel(TwitchChannel channel) {
-        if(channels.contains(channel)) channels.set(channels.indexOf(channel), channel);
-        else channels.add(channel);
+    public void setChannel(TwitchChannel twitchChannel) {
+        if(channels.containsKey(twitchChannel.id())) channels.replace(twitchChannel.id(), twitchChannel);
+        else channels.put(twitchChannel.id(), twitchChannel);
     }
-    public TwitchChannel twitchChannel(String id) {
-        TwitchChannel ch = channels.stream().filter(c -> c.id().equals(String.valueOf(id))).findFirst().orElse(new TwitchChannel(String.valueOf(id)));
-        if(ch.getLatestUpdate()-System.currentTimeMillis()/1000 > 600) ch.update();
-        return ch;
+    public TwitchChannel getChannel(String id) {
+        return channels.get(id);
     }
-
-    public void user(User user) {
-        if(users.contains(user)) users.set(users.indexOf(user), user);
-        else users.add(user);
-    }
-    public User user(String id) {
-        return users.stream().filter(c -> c.getId().equals(id)).findFirst().orElse(null);
+    public void removeChannel(String id) {
+        channels.remove(id);
     }
 
     public void setLiveChannel(LiveObject liveObject) {
@@ -47,6 +40,63 @@ public class CacheManager {
     }
     public void removeLiveChannel(String id) {
         liveChannels.remove(id);
+    }
+
+    public void setUser(UserObject user) {
+        try {
+            SystemAPI.get().database().execute(
+                    "INSERT INTO UserCache(id, login, displayName, broadcasterType, description, profileImageUrl, createdAt) VALUES('" + user.id() + "', '" + user.login() + "', '" + user.displayName() + "', '" + user.broadcasterType() + "', '" + user.description() + "', '" + user.profileImageUrl() + "', " + user.createdAt() + ") " +
+                            "ON DUPLICATE KEY UPDATE login='" + user.login() + "', displayName='" + user.displayName() + "', broadcasterType='" + user.broadcasterType() + "', description='" + user.description() + "', profileImageUrl='" + user.profileImageUrl() + "', createdAt=" + user.createdAt()
+            );
+            if(users.containsKey(user.id())) users.replace(user.id(), user);
+            else users.put(user.id(), user);
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+    }
+    public UserObject getUserById(String id) {
+        if(this.users.containsKey(id)) return this.users.get(id);
+        try {
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE id='" + id + "'");
+            if(!rs.next()) {
+                try { rs.close(); } catch (Exception ignored) { }
+                return null;
+            }
+            UserObject user = new UserObject(rs.getString("id"), rs.getString("login"), rs.getString("displayName"), rs.getString("broadcasterType"), rs.getString("description"), rs.getString("profileImageUrl"), rs.getLong("createdAt"));
+            users.put(user.id(), user);
+            try { rs.close(); } catch (Exception ignored) { }
+            return user;
+        } catch (Exception err) {
+            err.printStackTrace();
+            return null;
+        }
+    }
+    public UserObject getUserByName(String name) {
+        for (UserObject user : users.values()) {
+            if (user.login().equalsIgnoreCase(name)) return user;
+        }
+        try {
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE login='" + name.toLowerCase() + "'");
+            if(!rs.next()) {
+                try { rs.close(); } catch (Exception ignored) { }
+                return null;
+            }
+            UserObject user = new UserObject(rs.getString("id"), rs.getString("login"), rs.getString("displayName"), rs.getString("broadcasterType"), rs.getString("description"), rs.getString("profileImageUrl"), rs.getLong("createdAt"));
+            users.put(user.id(), user);
+            try { rs.close(); } catch (Exception ignored) { }
+            return user;
+        } catch (Exception err) {
+            err.printStackTrace();
+            return null;
+        }
+    }
+    public void removeUser(String id) {
+        try {
+            SystemAPI.get().database().execute("DELETE FROM UserCache WHERE id='" + id + "'");
+        } catch (Exception err) {
+            err.printStackTrace();
+        }
+        users.remove(id);
     }
 
 }

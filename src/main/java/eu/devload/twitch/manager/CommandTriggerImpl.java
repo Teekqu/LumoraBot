@@ -43,7 +43,7 @@ public class CommandTriggerImpl {
             String command = splits[0].substring(1);
             String[] args = new String[splits.length - 1];
             System.arraycopy(splits, 1, args, 0, args.length);
-            TwitchChannel channel = CacheManager.get().twitchChannel(e.getChannel().getId());
+            TwitchChannel channel = CacheManager.get().getChannel(e.getChannel().getId());
             triggerCommand(channel, e.getUser(), command, args);
         });
     }

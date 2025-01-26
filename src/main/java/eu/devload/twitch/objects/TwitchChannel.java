@@ -10,6 +10,7 @@ import com.github.twitch4j.helix.domain.Stream;
 import com.github.twitch4j.helix.domain.StreamList;
 import com.github.twitch4j.helix.domain.SubscriptionList;
 import com.github.twitch4j.helix.domain.User;
+import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.utils.Convert;
 import eu.devload.twitch.utils.SystemAPI;
 import org.json.JSONObject;
@@ -24,26 +25,13 @@ import java.util.*;
 public class TwitchChannel {
 
     private final String id;
-    private User user;
-    private long timestamp;
 
     public TwitchChannel(String id) {
         this.id = id;
-        this.user = null;
-        this.timestamp = System.currentTimeMillis()/1000;
     }
 
     public String id() {
         return this.id;
-    }
-
-    public long getLatestUpdate() {
-        return this.timestamp;
-    }
-
-    public void update() {
-        this.user = (SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(this.id), null).execute()).getUsers().getFirst();
-        this.timestamp = System.currentTimeMillis()/1000;
     }
 
     public String oauth2() {
@@ -92,33 +80,28 @@ public class TwitchChannel {
         return this.oauth2() != null;
     }
 
-    public User getUser() {
-        if(this.user == null) this.user = (SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(this.id), null).execute()).getUsers().getFirst();
-        return this.user;
+    public UserObject getUser() {
+        return CacheManager.get().getUserById(this.id);
     }
 
     public String getName() {
-        return this.getUser().getLogin();
+        return this.getUser().login();
     }
 
     public String getDisplayName() {
-        return this.getUser().getDisplayName();
+        return this.getUser().displayName();
     }
 
     public String getProfileImageUrl() {
-        return this.getUser().getProfileImageUrl();
-    }
-
-    public String getOfflineImageUrl() {
-        return this.getUser().getOfflineImageUrl();
+        return this.getUser().profileImageUrl();
     }
 
     public String getBroadcasterType() {
-        return this.getUser().getBroadcasterType();
+        return this.getUser().broadcasterType();
     }
 
     public String getDescription() {
-        return this.getUser().getDescription();
+        return this.getUser().description();
     }
 
     public int getSubCount() {
@@ -167,7 +150,7 @@ public class TwitchChannel {
 
     public String getFollowAge(String userId) {
         if (this.id.equals(userId))
-            return Convert.secondsToFormat(System.currentTimeMillis() / 1000L - this.getUser().getCreatedAt().getEpochSecond());
+            return Convert.secondsToFormat(System.currentTimeMillis() / 1000L - this.getUser().createdAt());
         InboundFollowers follows = SystemAPI.get().client().getHelix().getChannelFollowers(this.oauth2(), this.id, userId, null, null).execute();
         return follows != null && follows.getFollows() != null && !follows.getFollows().isEmpty() ? Convert.secondsToFormat(System.currentTimeMillis() / 1000L - (follows.getFollows().getFirst()).getFollowedAt().getEpochSecond()) : "-1";
     }

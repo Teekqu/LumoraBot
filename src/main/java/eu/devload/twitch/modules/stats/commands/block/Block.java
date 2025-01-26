@@ -4,8 +4,10 @@ import com.github.twitch4j.common.events.domain.EventUser;
 import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.helix.domain.UserList;
 import eu.devload.twitch.interfaces.TwitchCommand;
+import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.modules.stats.utils.StatsManager;
 import eu.devload.twitch.objects.TwitchChannel;
+import eu.devload.twitch.objects.UserObject;
 import eu.devload.twitch.utils.SystemAPI;
 
 import java.util.Collections;
@@ -29,24 +31,22 @@ public class Block implements TwitchCommand {
             return;
         }
 
-        UserList userList = SystemAPI.get().client().getHelix().getUsers(null, null, Collections.singletonList(user)).execute();
-        if(userList.getUsers().isEmpty() || userList.getUsers() == null) {
+        UserObject u = CacheManager.get().getUserByName(user);
+        if(u == null) {
             channel.sendMessage("User not found!");
             return;
         }
 
-        User u = userList.getUsers().getFirst();
-
         if(type.equalsIgnoreCase("chatstats")) {
-            StatsManager.block(channel, u.getId(), "chatstats");
-            channel.sendMessage("User " + u.getDisplayName() + " has been blocked from chatstats!");
+            StatsManager.block(channel, u.id(), "chatstats");
+            channel.sendMessage("User " + u.displayName() + " has been blocked from chatstats!");
         } else if(type.equalsIgnoreCase("watchtime")) {
-            StatsManager.block(channel, u.getId(), "watchtime");
-            channel.sendMessage("User " + u.getDisplayName() + " has been blocked from watchtime!");
+            StatsManager.block(channel, u.id(), "watchtime");
+            channel.sendMessage("User " + u.displayName() + " has been blocked from watchtime!");
         } else if(type.equalsIgnoreCase("all")) {
-            StatsManager.block(channel, u.getId(), "chatstats");
-            StatsManager.block(channel, u.getId(), "watchtime");
-            channel.sendMessage("User " + u.getDisplayName() + " has been blocked from chatstats and watchtime!");
+            StatsManager.block(channel, u.id(), "chatstats");
+            StatsManager.block(channel, u.id(), "watchtime");
+            channel.sendMessage("User " + u.displayName() + " has been blocked from chatstats and watchtime!");
         } else {
             channel.sendMessage("Usage: !block <user> [<chatstats/watchtime>]");
         }
