@@ -14,7 +14,7 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.10.0"))
     testImplementation("org.junit.jupiter:junit-jupiter")
 
-    implementation("com.github.twitch4j:twitch4j:1.21.0")
+    implementation("com.github.twitch4j:twitch4j:1.23.0")
     implementation("org.json:json:20240303")
     implementation("com.zaxxer:HikariCP:5.1.0")
     implementation("org.mariadb.jdbc:mariadb-java-client:3.4.1")
