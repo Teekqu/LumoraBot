@@ -26,9 +26,10 @@ public class Watchtime implements TwitchCommand {
             UserObject user = CacheManager.get().getUserByName(userName);
             if(user != null) userId = user.id();
         }
+        UserObject user = CacheManager.get().getUserById(userId);
 
         long minutes = StatsManager.getWatchtime(channel, userId);
-        channel.sendMessage(userName+" has watched "+ Convert.secondsToFormat(minutes*60L)+" in this channel! | "+sender.getName());
+        channel.sendMessage(user.login()+" has watched "+ Convert.secondsToFormat(minutes*60L)+" in this channel! | "+sender.getName());
 
     }
 }

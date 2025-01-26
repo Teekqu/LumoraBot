@@ -7,8 +7,10 @@ import com.github.twitch4j.helix.domain.User;
 import com.github.twitch4j.helix.domain.UserList;
 import com.netflix.hystrix.HystrixCommand;
 import eu.devload.twitch.interfaces.TwitchCommand;
+import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.modules.stats.utils.StatsManager;
 import eu.devload.twitch.objects.TwitchChannel;
+import eu.devload.twitch.objects.UserObject;
 import eu.devload.twitch.utils.SystemAPI;
 
 import java.util.Collections;
@@ -25,12 +27,13 @@ public class Messages implements TwitchCommand {
 
         String userId = sender.getId();
         if(!userName.equalsIgnoreCase(sender.getName())) {
-            User user = SystemAPI.get().client().getHelix().getUsers(channel.oauth2(), null, Collections.singletonList(userName)).execute().getUsers().getFirst();
-            if(user != null) userId = user.getId();
+            UserObject user = CacheManager.get().getUserByName(userName);
+            if(user != null) userId = user.id();
         }
+        UserObject user = CacheManager.get().getUserById(userId);
 
         int amount = StatsManager.getMessageCount(channel, userId);
-        channel.sendMessage(userName+" has sent "+amount+" messages in this channel! | "+sender.getName());
+        channel.sendMessage(user.login()+" has sent "+amount+" messages in this channel! | "+sender.getName());
 
     }
 }

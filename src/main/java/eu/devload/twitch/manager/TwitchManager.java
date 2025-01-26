@@ -24,7 +24,7 @@ public record TwitchManager(TwitchClient client) {
 
             while (rsWt.next()) {
                 String channelId = rsWt.getString("channelId");
-                TwitchChannel channel = new TwitchChannel(channelId);
+                TwitchChannel channel = CacheManager.get().getChannel(channelId);
                 if(channel.exists()) channels.add(channel);
             }
 

@@ -25,6 +25,7 @@ public class CacheManager {
         else channels.put(twitchChannel.id(), twitchChannel);
     }
     public TwitchChannel getChannel(String id) {
+        if(!channels.containsKey(id)) channels.put(id, new TwitchChannel(id));
         return channels.get(id);
     }
     public void removeChannel(String id) {
@@ -44,9 +45,12 @@ public class CacheManager {
 
     public void setUser(UserObject user) {
         try {
+            if(user.broadcasterType().isEmpty()) user.broadcasterType("default");
+            if(user.description().isEmpty()) user.description("No description provided.");
+            if(user.profileImageUrl().isEmpty()) user.profileImageUrl("https://i.devload.eu/empty-profile-picture.png");
             SystemAPI.get().database().execute(
-                    "INSERT INTO UserCache(id, login, displayName, broadcasterType, description, profileImageUrl, createdAt) VALUES('" + user.id() + "', '" + user.login() + "', '" + user.displayName() + "', '" + user.broadcasterType() + "', '" + user.description() + "', '" + user.profileImageUrl() + "', " + user.createdAt() + ") " +
-                            "ON DUPLICATE KEY UPDATE login='" + user.login() + "', displayName='" + user.displayName() + "', broadcasterType='" + user.broadcasterType() + "', description='" + user.description() + "', profileImageUrl='" + user.profileImageUrl() + "', createdAt=" + user.createdAt()
+                    "INSERT INTO UserCache(id, login, displayName, broadcasterType, description, profileImageUrl, createdAt) VALUES('" + user.id() + "', '" + user.login() + "', '" + user.displayName() + "', '" + user.broadcasterType() + "', \"" + user.description() + "\", '" + user.profileImageUrl() + "', " + user.createdAt() + ") " +
+                            "ON DUPLICATE KEY UPDATE login='" + user.login() + "', displayName='" + user.displayName() + "', broadcasterType='" + user.broadcasterType() + "', description=\"" + user.description() + "\", profileImageUrl='" + user.profileImageUrl() + "', createdAt=" + user.createdAt()
             );
             if(users.containsKey(user.id())) users.replace(user.id(), user);
             else users.put(user.id(), user);
