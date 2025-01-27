@@ -35,15 +35,19 @@ public class Watchtime {
 
                         for(String o : chatters) {
                             if(o == null) continue;
-                            HystrixCommand<UserList> userrequest = SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(o), null);
-                            if(userrequest == null) continue;
-                            UserList users = userrequest.execute();
-                            if(users == null || users.getUsers().isEmpty() || userrequest.isResponseTimedOut()) continue;
-                            User user = users.getUsers().getFirst();
 
-                            UserObject u = updateUserCache(user);
-                            if(StatsManager.isBlocked(ch, u, "watchtime")) continue;
-                            StatsManager.addWatchtime(ch, u, 5);
+                            UserObject us = CacheManager.get().getUserById(o);
+                            if(us == null) {
+                                HystrixCommand<UserList> userrequest = SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(o), null);
+                                if(userrequest == null) continue;
+                                UserList users = userrequest.execute();
+                                if(users == null || users.getUsers().isEmpty() || userrequest.isResponseTimedOut()) continue;
+                                User user = users.getUsers().getFirst();
+                                us = updateUserCache(user);
+                            }
+
+                            if(StatsManager.isBlocked(ch, us, "watchtime")) continue;
+                            StatsManager.addWatchtime(ch, us, 5);
                         }
 
                         StatsManager.updateMaximalWatchtime(ch, 5);
