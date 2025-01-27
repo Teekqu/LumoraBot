@@ -66,17 +66,14 @@ public class Watchtime {
     private UserObject updateUserCache(User user) {
         UserObject userObject = CacheManager.get().getUserById(user.getId());
         if(userObject == null) {
-            UserList userList = SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(user.getId()), null).execute();
-            if(userList.getUsers().isEmpty() || userList.getUsers() == null) return null;
-            User u = userList.getUsers().getFirst();
             userObject = new UserObject(
-                    u.getId(),
-                    u.getLogin(),
-                    u.getDisplayName(),
-                    u.getBroadcasterType(),
-                    u.getDescription(),
-                    u.getProfileImageUrl(),
-                    u.getCreatedAt().getEpochSecond()
+                    user.getId(),
+                    user.getLogin(),
+                    user.getDisplayName(),
+                    user.getBroadcasterType(),
+                    user.getDescription(),
+                    user.getProfileImageUrl(),
+                    user.getCreatedAt().getEpochSecond()
             );
             CacheManager.get().setUser(userObject);
         } else {
