@@ -1,8 +1,8 @@
 package eu.devload.twitch.modules.stats;
 
-import com.github.twitch4j.chat.events.channel.ChannelMessageEvent;
 import eu.devload.twitch.interfaces.ModuleInfo;
 import eu.devload.twitch.interfaces.TwitchModule;
+import eu.devload.twitch.modules.stats.commands.Stats;
 import eu.devload.twitch.modules.stats.commands.block.Block;
 import eu.devload.twitch.modules.stats.commands.block.Unblock;
 import eu.devload.twitch.modules.stats.commands.chatstats.AddMessages;
@@ -33,6 +33,7 @@ public class StatsModule implements TwitchModule {
 
         registerCommand(new eu.devload.twitch.modules.stats.commands.watchtime.Watchtime());
         registerCommand(new Messages());
+        registerCommand(new Stats());
 
 
         registerEvent(new MessageCount());
