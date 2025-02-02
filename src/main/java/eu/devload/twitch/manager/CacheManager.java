@@ -59,7 +59,6 @@ public class CacheManager {
         }
     }
     public UserObject getUserById(String id) {
-        if(this.users.containsKey(id)) return this.users.get(id);
         try {
             ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE id='" + id + "'");
             if(!rs.next()) {
@@ -76,9 +75,6 @@ public class CacheManager {
         }
     }
     public UserObject getUserByName(String name) {
-        for (UserObject user : users.values()) {
-            if (user.login().equalsIgnoreCase(name)) return user;
-        }
         try {
             ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE login='" + name.toLowerCase() + "'");
             if(!rs.next()) {
