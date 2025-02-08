@@ -75,6 +75,7 @@ public class CacheManager {
         }
     }
     public UserObject getUserByName(String name) {
+        if(name.startsWith("@")) name = name.substring(1);
         try {
             ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE login='" + name.toLowerCase() + "'");
             if(!rs.next()) {
