@@ -47,7 +47,6 @@ public class ClientUser {
             if (System.currentTimeMillis() / 1000 > generated + expires) {
                 JSONObject json = SystemAPI.get().twitchManager().generateNewOauth2TokenWithRefreshToken(refreshToken);
                 if (json == null) {
-                    SystemAPI.get().twitchManager().removeChannel(this);
                     return null;
                 }
                 String newOauth2 = json.getString("access_token");
