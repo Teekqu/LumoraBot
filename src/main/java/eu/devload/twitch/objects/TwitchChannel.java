@@ -174,20 +174,20 @@ public class TwitchChannel {
             if(this.isEditor(userId)) return;
             if(this.isModerator(userId)) return;
             BanUserInput banUserInput = BanUserInput.builder().userId(userId).reason(reason).duration(seconds).build();
-            SystemAPI.get().client().getHelix().banUser(this.oauth2(), this.id, this.id, banUserInput).execute();
+            SystemAPI.get().client().getHelix().banUser(ClientUser.get().oauth(), this.id, ClientUser.get().id(), banUserInput).execute();
         });
     }
 
     public void banUser(String userId, String reason) {
         CompletableFuture.runAsync(() -> {
             BanUserInput banUserInput = BanUserInput.builder().userId(userId).reason(reason).build();
-            SystemAPI.get().client().getHelix().banUser(this.oauth2(), this.id, this.id, banUserInput).execute();
+            SystemAPI.get().client().getHelix().banUser(ClientUser.get().oauth(), this.id, ClientUser.get().id(), banUserInput).execute();
         });
     }
 
     public void unbanUser(String userId) {
         CompletableFuture.runAsync(() -> {
-            SystemAPI.get().client().getHelix().unbanUser(this.oauth2(), this.id, this.id, userId).execute();
+            SystemAPI.get().client().getHelix().unbanUser(ClientUser.get().oauth(), this.id, ClientUser.get().id(), userId).execute();
         });
     }
 
@@ -207,7 +207,7 @@ public class TwitchChannel {
 
     public void sendAnnouncement(String message) {
         CompletableFuture.runAsync(() -> {
-            SystemAPI.get().client().getHelix().sendChatAnnouncement(this.oauth2(), this.id, this.id, message, AnnouncementColor.PRIMARY).execute();
+            SystemAPI.get().client().getHelix().sendChatAnnouncement(ClientUser.get().oauth(), this.id, ClientUser.get().id(), message, AnnouncementColor.PRIMARY).execute();
         });
     }
 
