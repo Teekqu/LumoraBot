@@ -38,7 +38,7 @@ public class Watchtime {
 
                             UserObject us = CacheManager.get().getUserById(o);
                             if(us == null) {
-                                HystrixCommand<UserList> userrequest = SystemAPI.get().client().getHelix().getUsers(null, Collections.singletonList(o), null);
+                                HystrixCommand<UserList> userrequest = SystemAPI.get().client().getHelix().getUsers(ch.oauth2(), Collections.singletonList(o), null);
                                 if(userrequest == null) continue;
                                 UserList users = userrequest.execute();
                                 if(users == null || users.getUsers().isEmpty() || userrequest.isResponseTimedOut()) continue;

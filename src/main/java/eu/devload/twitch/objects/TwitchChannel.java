@@ -9,7 +9,6 @@ import com.github.twitch4j.helix.domain.Moderator;
 import com.github.twitch4j.helix.domain.Stream;
 import com.github.twitch4j.helix.domain.StreamList;
 import com.github.twitch4j.helix.domain.SubscriptionList;
-import com.github.twitch4j.helix.domain.User;
 import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.utils.Convert;
 import eu.devload.twitch.utils.SystemAPI;
@@ -21,6 +20,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 public class TwitchChannel {
 
@@ -169,31 +169,46 @@ public class TwitchChannel {
     }
 
     public void timeoutUser(String userId, int seconds, String reason) {
-        BanUserInput banUserInput = BanUserInput.builder().userId(userId).reason(reason).duration(seconds).build();
-        SystemAPI.get().client().getHelix().banUser(this.oauth2(), this.id, this.id, banUserInput).execute();
+        CompletableFuture.runAsync(() -> {
+            if(this.isBroadcaster(userId)) return;
+            if(this.isEditor(userId)) return;
+            if(this.isModerator(userId)) return;
+            BanUserInput banUserInput = BanUserInput.builder().userId(userId).reason(reason).duration(seconds).build();
+            SystemAPI.get().client().getHelix().banUser(this.oauth2(), this.id, this.id, banUserInput).execute();
+        });
     }
 
     public void banUser(String userId, String reason) {
-        BanUserInput banUserInput = BanUserInput.builder().userId(userId).reason(reason).build();
-        SystemAPI.get().client().getHelix().banUser(this.oauth2(), this.id, this.id, banUserInput).execute();
+        CompletableFuture.runAsync(() -> {
+            BanUserInput banUserInput = BanUserInput.builder().userId(userId).reason(reason).build();
+            SystemAPI.get().client().getHelix().banUser(this.oauth2(), this.id, this.id, banUserInput).execute();
+        });
     }
 
     public void unbanUser(String userId) {
-        SystemAPI.get().client().getHelix().unbanUser(this.oauth2(), this.id, this.id, userId).execute();
+        CompletableFuture.runAsync(() -> {
+            SystemAPI.get().client().getHelix().unbanUser(this.oauth2(), this.id, this.id, userId).execute();
+        });
     }
 
     public void setTitle(String title) {
-        ChannelInformation channelInformation = ChannelInformation.builder().title(title).build();
-        SystemAPI.get().client().getHelix().updateChannelInformation(this.oauth2(), this.id, channelInformation).execute();
+        CompletableFuture.runAsync(() -> {
+            ChannelInformation channelInformation = ChannelInformation.builder().title(title).build();
+            SystemAPI.get().client().getHelix().updateChannelInformation(this.oauth2(), this.id, channelInformation).execute();
+        });
     }
 
     public void setGame(String game) {
-        ChannelInformation channelInformation = ChannelInformation.builder().gameName(game).build();
-        SystemAPI.get().client().getHelix().updateChannelInformation(this.oauth2(), this.id, channelInformation).execute();
+        CompletableFuture.runAsync(() -> {
+            ChannelInformation channelInformation = ChannelInformation.builder().gameName(game).build();
+            SystemAPI.get().client().getHelix().updateChannelInformation(this.oauth2(), this.id, channelInformation).execute();
+        });
     }
 
     public void sendAnnouncement(String message) {
-        SystemAPI.get().client().getHelix().sendChatAnnouncement(this.oauth2(), this.id, this.id, message, AnnouncementColor.PRIMARY).execute();
+        CompletableFuture.runAsync(() -> {
+            SystemAPI.get().client().getHelix().sendChatAnnouncement(this.oauth2(), this.id, this.id, message, AnnouncementColor.PRIMARY).execute();
+        });
     }
 
     public List<String> getChatters() {

@@ -1,11 +1,14 @@
 package eu.devload.twitch.manager;
 
+import com.github.twitch4j.helix.domain.User;
 import eu.devload.twitch.objects.LiveObject;
 import eu.devload.twitch.objects.TwitchChannel;
 import eu.devload.twitch.objects.UserObject;
 import eu.devload.twitch.utils.SystemAPI;
 
 import java.sql.ResultSet;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class CacheManager {
@@ -63,7 +66,20 @@ public class CacheManager {
             ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE id='" + id + "'");
             if(!rs.next()) {
                 try { rs.close(); } catch (Exception ignored) { }
-                return null;
+                TwitchChannel ch = SystemAPI.get().twitchManager().registeredChannels().getFirst();
+                User user = SystemAPI.get().client().getHelix().getUsers(ch.oauth2(), Collections.singletonList(id), null).execute().getUsers().getFirst();
+                if(user == null) return null;
+                UserObject userObject = new UserObject(
+                        user.getId(),
+                        user.getLogin(),
+                        user.getDisplayName(),
+                        user.getBroadcasterType(),
+                        user.getDescription(),
+                        user.getProfileImageUrl(),
+                        user.getCreatedAt().getEpochSecond()
+                );
+                this.setUser(userObject);
+                return userObject;
             }
             UserObject user = new UserObject(rs.getString("id"), rs.getString("login"), rs.getString("displayName"), rs.getString("broadcasterType"), rs.getString("description"), rs.getString("profileImageUrl"), rs.getLong("createdAt"));
             users.put(user.id(), user);
