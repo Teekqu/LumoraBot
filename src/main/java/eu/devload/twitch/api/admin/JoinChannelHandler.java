@@ -2,6 +2,7 @@ package eu.devload.twitch.api.admin;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import eu.devload.twitch.objects.ClientUser;
 import eu.devload.twitch.objects.TwitchChannel;
 import eu.devload.twitch.utils.SystemAPI;
 
@@ -23,6 +24,12 @@ public class JoinChannelHandler implements HttpHandler {
             }
 
             String channel = exchange.getRequestURI().getQuery().split("=")[1];
+            if(channel == null || channel.isEmpty() || channel.equalsIgnoreCase(ClientUser.get().id())) {
+                System.out.println("[API] Invalid channel");
+                exchange.sendResponseHeaders(400, 0);
+                exchange.getResponseBody().close();
+                return;
+            }
 
             try {
                 ResultSet rs = SystemAPI.get().database().query("SELECT * FROM OauthTokens WHERE id='" + channel + "'");
