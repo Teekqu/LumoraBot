@@ -30,7 +30,7 @@ public class PingCommand implements TwitchCommand {
 
         time = System.currentTimeMillis();
         try {
-            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM Channels WHERE channelId=" + channel.id());
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE id=" + channel.id());
             try { rs.close(); } catch (Exception err) { }
         } catch (Exception err) {
             err.printStackTrace();

@@ -62,6 +62,7 @@ public class CacheManager {
         }
     }
     public UserObject getUserById(String id) {
+        if(users.containsKey(id)) return users.get(id);
         try {
             ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE id='" + id + "'");
             if(!rs.next()) {
@@ -92,6 +93,7 @@ public class CacheManager {
     }
     public UserObject getUserByName(String name) {
         if(name.startsWith("@")) name = name.substring(1);
+        for(UserObject user : users.values()) if(user.login().equalsIgnoreCase(name)) return user;
         try {
             ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache WHERE login='" + name.toLowerCase() + "'");
             if(!rs.next()) {
@@ -108,12 +110,30 @@ public class CacheManager {
         }
     }
     public void removeUser(String id) {
+        users.remove(id);
         try {
             SystemAPI.get().database().execute("DELETE FROM UserCache WHERE id='" + id + "'");
         } catch (Exception err) {
             err.printStackTrace();
         }
         users.remove(id);
+    }
+
+    public void initialUserCache() {
+        System.out.println("Loading UserCache...");
+        try {
+            ResultSet rs = SystemAPI.get().database().query("SELECT * FROM UserCache");
+            while(rs.next()) {
+                UserObject user = new UserObject(rs.getString("id"), rs.getString("login"), rs.getString("displayName"), rs.getString("broadcasterType"), rs.getString("description"), rs.getString("profileImageUrl"), rs.getLong("createdAt"));
+                if(!users.containsKey(user.id())) users.put(user.id(), user);
+                else users.replace(user.id(), user);
+            }
+            try { rs.close(); } catch (Exception ignored) { }
+            System.out.println("Finished loading UserCache.");
+        } catch (Exception err) {
+            err.printStackTrace();
+            System.out.println("Failed to load UserCache.");
+        }
     }
 
 }

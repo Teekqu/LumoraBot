@@ -5,7 +5,7 @@ import java.util.List;
 public class DevManager {
 
     public static List<String> developers = List.of(
-            "474426129"
+            "1268476253"
     );
 
     public static boolean isDeveloper(String id) {

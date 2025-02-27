@@ -5,6 +5,7 @@ import com.github.philippheuer.events4j.simple.SimpleEventHandler;
 import com.github.twitch4j.TwitchClient;
 import com.github.twitch4j.TwitchClientBuilder;
 import eu.devload.twitch.api.API;
+import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.manager.CommandTriggerImpl;
 import eu.devload.twitch.manager.DefaultCommandManager;
 import eu.devload.twitch.manager.ModuleManager;
@@ -12,6 +13,7 @@ import eu.devload.twitch.modules.ccommands.CCommandsModule;
 import eu.devload.twitch.modules.core.CoreModule;
 import eu.devload.twitch.modules.developer.DeveloperModule;
 import eu.devload.twitch.modules.stats.StatsModule;
+import eu.devload.twitch.modules.stats.utils.StatsManager;
 import eu.devload.twitch.objects.ClientUser;
 import eu.devload.twitch.utils.SystemAPI;
 
@@ -51,6 +53,7 @@ public class Lumora {
         client.getChat().connect();
 
         CommandTriggerImpl.startEventCheck();
+        CacheManager.get().initialUserCache();
 
     }
 
