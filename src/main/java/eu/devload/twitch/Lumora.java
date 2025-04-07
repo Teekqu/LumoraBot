@@ -13,7 +13,6 @@ import eu.devload.twitch.modules.ccommands.CCommandsModule;
 import eu.devload.twitch.modules.core.CoreModule;
 import eu.devload.twitch.modules.developer.DeveloperModule;
 import eu.devload.twitch.modules.stats.StatsModule;
-import eu.devload.twitch.modules.stats.utils.StatsManager;
 import eu.devload.twitch.objects.ClientUser;
 import eu.devload.twitch.utils.SystemAPI;
 

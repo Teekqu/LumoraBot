@@ -151,6 +151,7 @@ public class Command implements TwitchCommand {
                     return;
                 }
                 String alias = args[3];
+                while(alias.startsWith("!")) alias = alias.substring(1);
                 if (CCManager.getCommand(channel.id(), alias) != null) {
                     channel.sendMessage("Alias already exists! | " + sender.getName());
                     return;
