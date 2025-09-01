@@ -1,14 +1,7 @@
 package eu.devload.twitch.objects;
 
 import com.github.twitch4j.common.enums.AnnouncementColor;
-import com.github.twitch4j.helix.domain.BanUserInput;
-import com.github.twitch4j.helix.domain.ChannelEditorList;
-import com.github.twitch4j.helix.domain.ChannelInformation;
-import com.github.twitch4j.helix.domain.InboundFollowers;
-import com.github.twitch4j.helix.domain.Moderator;
-import com.github.twitch4j.helix.domain.Stream;
-import com.github.twitch4j.helix.domain.StreamList;
-import com.github.twitch4j.helix.domain.SubscriptionList;
+import com.github.twitch4j.helix.domain.*;
 import eu.devload.twitch.manager.CacheManager;
 import eu.devload.twitch.utils.Convert;
 import eu.devload.twitch.utils.SystemAPI;
@@ -165,7 +158,8 @@ public class TwitchChannel {
     }
 
     public void sendMessage(String message) {
-        SystemAPI.get().client().getChat().sendMessage(this.getName(), message);
+        SystemAPI.get().client().getHelix().sendChatMessage(ClientUser.get().appToken(), ChatMessage.builder().broadcasterId(this.id()).senderId(ClientUser.get().id()).message(message).build())
+                        .execute().get();
     }
 
     public void timeoutUser(String userId, int seconds, String reason) {

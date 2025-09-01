@@ -29,6 +29,8 @@ public class ClientUser {
     private final String displayName = "LumoraBot";
     private final String login = displayName.toLowerCase();
 
+    private JSONObject appToken = null;
+
 
     public String oauth() {
         try {
@@ -58,6 +60,43 @@ public class ClientUser {
             }
             oauth2 = accessToken;
             return oauth2;
+        } catch (Exception err) {
+            err.printStackTrace();
+            return null;
+        }
+    }
+
+    public String appToken() {
+        if(this.appToken == null) {
+            this.appToken = this.generateNewAppToken();
+        }
+        if(this.appToken.getLong("expires_in") + this.appToken.getLong("generated") < System.currentTimeMillis() / 1000) {
+            this.appToken = this.generateNewAppToken();
+        }
+        return this.appToken.getString("access_token");
+    }
+
+    public JSONObject generateNewAppToken() {
+        try {
+            URL url = new URL(String.format("https://id.twitch.tv/oauth2/token?client_id=%s&client_secret=%s&grant_type=client_credentials", SystemAPI.get().config().get("twitch.client.id"), SystemAPI.get().config().get("twitch.client.secret")));
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setRequestProperty("Content-Type", "application/json");
+            connection.setDoOutput(true);
+            connection.setDoInput(true);
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder sb = new StringBuilder();
+
+            String inputLine;
+            while ((inputLine = in.readLine()) != null) {
+                sb.append(inputLine);
+            }
+
+            in.close();
+            connection.disconnect();
+            JSONObject json = new JSONObject(sb.toString());
+            json.put("generated", System.currentTimeMillis() / 1000);
+            return json;
         } catch (Exception err) {
             err.printStackTrace();
             return null;
